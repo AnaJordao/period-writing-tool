@@ -1,0 +1,63 @@
+import { IconPlus, IconSearch } from '@tabler/icons-react';
+import { Autocomplete, Burger, Button, Divider, Drawer, Group, ScrollArea, Title } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import classes from './HeaderSearch.module.css';
+
+
+export function HeaderSearch() {
+  const [opened, { toggle, close }] = useDisclosure(false);
+
+  return (
+    <header className={classes.header}>
+      <div className={classes.inner}>
+        <Group>
+          <Burger
+            opened={opened}
+            onClick={toggle}
+            size="sm"
+            hiddenFrom="sm"
+            aria-label="Toggle navigation"
+          />
+          <Title order={3}>
+            Period - Writing Tool
+          </Title>
+          {/* <MantineLogo size={28} /> */}
+        </Group>
+
+        <Group>
+          <Autocomplete
+            className={classes.search}
+            placeholder="Search"
+            leftSection={<IconSearch size={16} stroke={1.5} />}
+            // data={['React', 'Angular', 'Vue', 'Next.js', 'Riot.js', 'Svelte', 'Blitz.js']}
+            visibleFrom="xs"
+          />
+          <Button className='btn' visibleFrom="sm"><IconPlus size={16}/>New Project</Button>
+        </Group>
+      </div>
+
+
+      <Drawer
+        opened={opened}
+        onClose={close}
+        size="100%"
+        padding="md"
+        title="Navigation"
+        hiddenFrom="sm"
+        zIndex={1000000}
+      >
+        <ScrollArea h="calc(100vh - 80px" mx="-md">
+          <Divider my="sm" />
+          <Button className='btn' visibleFrom="sm"><IconPlus size={16}/>New Project</Button>
+          <Autocomplete
+            placeholder="Search"
+            leftSection={<IconSearch size={16} stroke={1.5} />}
+            // data={['React', 'Angular', 'Vue', 'Next.js', 'Riot.js', 'Svelte', 'Blitz.js']}
+            mx="md"
+            mb="sm"
+          />
+        </ScrollArea>
+      </Drawer>
+    </header>
+  );
+}

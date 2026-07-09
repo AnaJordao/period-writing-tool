@@ -1,2 +1,3 @@
-# period-writing-tool
-Period is an application that helps writers to write
+# Period - Writing Tool
+
+Period is an application that helps to manage writing sessions easily.
