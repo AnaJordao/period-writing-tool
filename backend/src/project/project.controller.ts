@@ -1,14 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ProjectService } from './project.service';
-import { CreateProjectDto } from './dto/create-project.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
+import { ProjectDto } from './dto/project.dto';
 
 @Controller('project')
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
   @Post()
-  create(@Body() createProjectDto: CreateProjectDto) {
+  create(@Body() createProjectDto: ProjectDto) {
     return this.projectService.create(createProjectDto);
   }
 
@@ -19,16 +26,16 @@ export class ProjectController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.projectService.findOne(+id);
+    return this.projectService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
-    return this.projectService.update(+id, updateProjectDto);
+  update(@Param('id') id: string, @Body() updateProjectDto: ProjectDto) {
+    return this.projectService.update(id, updateProjectDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.projectService.remove(+id);
+    return this.projectService.remove(id);
   }
 }
