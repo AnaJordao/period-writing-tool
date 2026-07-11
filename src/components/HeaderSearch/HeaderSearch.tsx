@@ -3,8 +3,7 @@ import { Autocomplete, Burger, Button, Divider, Drawer, Group, ScrollArea, Title
 import { useDisclosure } from '@mantine/hooks';
 import classes from './HeaderSearch.module.css';
 
-
-export function HeaderSearch() {
+export function HeaderSearch({onClickBtn}: {onClickBtn: () => void}) {
   const [opened, { toggle, close }] = useDisclosure(false);
 
   return (
@@ -29,11 +28,13 @@ export function HeaderSearch() {
             className={classes.search}
             placeholder="Search"
             leftSection={<IconSearch size={16} stroke={1.5} />}
-            // data={['React', 'Angular', 'Vue', 'Next.js', 'Riot.js', 'Svelte', 'Blitz.js']}
             visibleFrom="xs"
           />
-          <Button className='btn' visibleFrom="sm"><IconPlus size={16}/>New Project</Button>
+          <Button className='standard-btn' visibleFrom="sm" onClick={onClickBtn}>
+            <IconPlus size={16}/>New Project
+          </Button>
         </Group>
+
       </div>
 
 
@@ -48,11 +49,12 @@ export function HeaderSearch() {
       >
         <ScrollArea h="calc(100vh - 80px" mx="-md">
           <Divider my="sm" />
-          <Button className='btn' visibleFrom="sm"><IconPlus size={16}/>New Project</Button>
+          <Button className='standard-btn' mx="md" mb="sm" onClick={onClickBtn}>
+            <IconPlus size={16}/>New Project
+          </Button>
           <Autocomplete
             placeholder="Search"
             leftSection={<IconSearch size={16} stroke={1.5} />}
-            // data={['React', 'Angular', 'Vue', 'Next.js', 'Riot.js', 'Svelte', 'Blitz.js']}
             mx="md"
             mb="sm"
           />
