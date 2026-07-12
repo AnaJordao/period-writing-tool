@@ -26,3 +26,15 @@
   color: var(--mantine-color-dimmed);
   margin-top: var(--mantine-spacing-xs);
 }
+
+.previewContainer {
+  position: relative;
+  margin-top: 16px;
+}
+
+.removeButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+}

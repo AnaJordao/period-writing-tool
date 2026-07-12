@@ -8,7 +8,5 @@ export class ProjectDto {
   @IsString()
   description?: string;
 
-  @IsOptional()
-  @IsString()
-  header?: string;
+  // headerFile is handled separeted
 }

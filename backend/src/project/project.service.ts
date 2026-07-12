@@ -6,9 +6,12 @@ import { PrismaService } from '../../prisma/prisma.service';
 export class ProjectService {
   constructor(private prisma: PrismaService) {}
 
-  create(createProjectDto: ProjectDto) {
+  create(createProjectDto: ProjectDto, filename?: string | null) {
     return this.prisma.project.create({
-      data: { ...createProjectDto },
+      data: {
+        ...createProjectDto,
+        header: filename ? `/uploads/${filename}` : null,
+      },
     });
   }
 
