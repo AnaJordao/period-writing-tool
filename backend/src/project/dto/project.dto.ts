@@ -8,5 +8,5 @@ export class ProjectDto {
   @IsString()
   description?: string;
 
-  // headerFile is handled separeted
+  // header is handled separeted
 }

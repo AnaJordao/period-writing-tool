@@ -27,5 +27,8 @@ export default defineConfig([
         tsconfigRootDir: import.meta.dirname,
       },
     },
+    rules: {
+      "react-hooks/set-state-in-effect": "off",
+    },
   },
 ]);

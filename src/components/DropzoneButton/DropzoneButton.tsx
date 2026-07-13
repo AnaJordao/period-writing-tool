@@ -5,24 +5,24 @@ import { Dropzone, MIME_TYPES } from '@mantine/dropzone';
 import classes from './DropzoneButton.module.css';
 
 interface DropzoneButtonProps {
-  headerFile: File | null;
-  setHeaderFile: (file: File | null) => void;
+  header: File | null;
+  setheader: (file: File | null) => void;
 }
 
 export function DropzoneButton({
-  headerFile,
-  setHeaderFile,
+  header,
+  setheader,
 }: DropzoneButtonProps) {
   const theme = useMantineTheme();
   const openRef = useRef<() => void>(null);
 
   const preview = useMemo(() => {
-    if (!headerFile) {
+    if (!header) {
       return null;
     }
 
-    return URL.createObjectURL(headerFile);
-  }, [headerFile]);
+    return URL.createObjectURL(header);
+  }, [header]);
 
   useEffect(() => {
     return () => {
@@ -38,7 +38,7 @@ export function DropzoneButton({
         openRef={openRef}
         onDrop={(files) => {
           if (files.length > 0) {
-            setHeaderFile(files[0]);
+            setheader(files[0]);
           }
         }}
         className={classes.dropzone}
@@ -73,7 +73,7 @@ export function DropzoneButton({
           
         </div>
       </Dropzone>
-      {headerFile && preview && (
+      {header && preview && (
         <div className={classes.previewContainer}>
           <ActionIcon
             className={classes.removeButton}
@@ -81,7 +81,7 @@ export function DropzoneButton({
             variant="filled"
             radius="xl"
             onClick={() => {
-                setHeaderFile(null);
+                setheader(null);
               }}
             aria-label="Remove image"
           >

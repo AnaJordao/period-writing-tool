@@ -17,7 +17,7 @@ export function HeaderSearch({onClickBtn}: {onClickBtn: () => void}) {
             hiddenFrom="sm"
             aria-label="Toggle navigation"
           />
-          <Title order={3}>
+          <Title  order={3} className={classes.title}>
             Period - Writing Tool
           </Title>
           {/* <MantineLogo size={28} /> */}
@@ -25,9 +25,9 @@ export function HeaderSearch({onClickBtn}: {onClickBtn: () => void}) {
 
         <Group>
           <Autocomplete
-            className={classes.search}
+            classNames={{input: classes.search}}
             placeholder="Search"
-            leftSection={<IconSearch size={16} stroke={1.5} />}
+            leftSection={<IconSearch className={classes.icon} size={16} stroke={1.5} />}
             visibleFrom="xs"
           />
           <Button className='standard-btn' visibleFrom="sm" onClick={onClickBtn}>
@@ -48,13 +48,14 @@ export function HeaderSearch({onClickBtn}: {onClickBtn: () => void}) {
         zIndex={1000000}
       >
         <ScrollArea h="calc(100vh - 80px" mx="-md">
-          <Divider my="sm" />
+          <Divider className={classes.divider} my="sm" />
           <Button className='standard-btn' mx="md" mb="sm" onClick={onClickBtn}>
             <IconPlus size={16}/>New Project
           </Button>
           <Autocomplete
+            classNames={{input: classes.search}}
             placeholder="Search"
-            leftSection={<IconSearch size={16} stroke={1.5} />}
+            leftSection={<IconSearch className={classes.icon} size={16} stroke={1.5} />}
             mx="md"
             mb="sm"
           />

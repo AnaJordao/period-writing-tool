@@ -2,7 +2,7 @@ export interface Project {
   id: string;
   name: string;
   description?: string;
-  headerFile?: File | null;
+  header?: string;
   createdAt: string;
   updatedAt: string;
   deletedAt?: string | null;
@@ -11,5 +11,5 @@ export interface Project {
 export interface ProjectRequest {
   name: string;
   description?: string;
-  headerFile?: File | null;
+  header?: File | null;
 }

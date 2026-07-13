@@ -10,8 +10,8 @@ export async function createProject(data: ProjectRequest) {
     formData.append("description", data.description);
   }
 
-  if (data.headerFile) {
-    formData.append("header", data.headerFile);
+  if (data.header) {
+    formData.append("header", data.header);
   }
 
   const response = await api.post<Project>(
@@ -29,6 +29,11 @@ export async function createProject(data: ProjectRequest) {
 
 export async function getProjects() {
   const response = await api.get<Project[]>("/project");
+  return response.data;
+}
+
+export async function getProjectById(id: string) {
+  const response = await api.get<Project>(`/project/${id}`);
   return response.data;
 }
 

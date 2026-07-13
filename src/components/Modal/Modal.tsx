@@ -9,13 +9,14 @@ import type { ProjectRequest } from "../../../shared/types/Project/Project";
 interface NewProjectModalProps {
   opened: boolean;
   onClose: () => void;
+  onCreate: () => void;
 }
 
-export function CreateNewProjectModal({ opened, onClose}: NewProjectModalProps)  {
-  const [projectRequest, setProjectRequest] = useState<ProjectRequest>({ name: "", description: "", headerFile: null });
+export function CreateNewProjectModal({ opened, onClose, onCreate }: NewProjectModalProps)  {
+  const [projectRequest, setProjectRequest] = useState<ProjectRequest>({ name: "", description: "", header: null });
 
   function cleanForm() {
-    setProjectRequest({ name: "", description: "", headerFile: null });
+    setProjectRequest({ name: "", description: "", header: null });
   }
 
   function handleClose() {
@@ -25,14 +26,13 @@ export function CreateNewProjectModal({ opened, onClose}: NewProjectModalProps) 
 
   async function handleCreate() {
     try {
-      const project = await createProject({
+      await createProject({
         name: projectRequest.name,
         description: projectRequest.description,
-        headerFile: projectRequest.headerFile
+        header: projectRequest.header
       });
-
-      console.log(project);
       
+      onCreate();
       handleClose();
 
     } catch (error) {
@@ -68,8 +68,8 @@ export function CreateNewProjectModal({ opened, onClose}: NewProjectModalProps) 
       />
 
       <DropzoneButton 
-        headerFile={projectRequest.headerFile ?? null} 
-        setHeaderFile={(file) => { setProjectRequest({ ...projectRequest, headerFile: file }); }} 
+        header={projectRequest.header ?? null} 
+        setheader={(file) => { setProjectRequest({ ...projectRequest, header: file }); }} 
       />
 
       <Group justify="flex-end" mt="xl">

@@ -33,8 +33,6 @@ export class ProjectController {
     }),
   )
   create(@Body() dto: ProjectDto, @UploadedFile() file?: Express.Multer.File) {
-    console.log(file);
-
     return this.projectService.create(dto, file?.filename ?? null);
   }
 
