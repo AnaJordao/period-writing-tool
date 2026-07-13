@@ -1,9 +1,9 @@
 .header {
   height: 56px;
   width: 100%;
-  margin-bottom: 120px;
+  margin-bottom: 60px;
   background-color: var(--mantine-color-body);
-  border-bottom: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+  border-bottom: 1px solid light-dark(var(--accent), var(--accent));
   padding-left: var(--mantine-spacing-md);
   padding-right: var(--mantine-spacing-md);
 }
@@ -33,4 +33,24 @@
   &:hover {
     background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
   }
+}
+
+.search {
+  border-color: var(--accent);
+
+  &:focus {
+    border-color: var(--accent);
+  }
+}
+
+.icon {
+  color: var(--accent);
+}
+
+.title {
+  color: var(--accent);
+}
+
+.divider {
+  color: var(--accent);
 }

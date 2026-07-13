@@ -9,14 +9,31 @@ import {
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { ProjectDto } from './dto/project.dto';
+import { UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import type { Express } from 'express';
+import { diskStorage } from 'multer';
 
 @Controller('project')
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
   @Post()
-  create(@Body() createProjectDto: ProjectDto) {
-    return this.projectService.create(createProjectDto);
+  @UseInterceptors(
+    FileInterceptor('header', {
+      storage: diskStorage({
+        destination: './uploads',
+
+        filename: (req, file, callback) => {
+          const uniqueName = Date.now() + '-' + file.originalname;
+
+          callback(null, uniqueName);
+        },
+      }),
+    }),
+  )
+  create(@Body() dto: ProjectDto, @UploadedFile() file?: Express.Multer.File) {
+    return this.projectService.create(dto, file?.filename ?? null);
   }
 
   @Get()

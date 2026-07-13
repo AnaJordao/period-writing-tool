@@ -1,10 +1,11 @@
 import { Container } from "@mantine/core";
-import { HeaderSearch } from "./components/HeaderSearch/HeaderSearch";
+import Home from "./pages/Home/Home";
 
 export default function App() {
+  
   return (
     <Container py="xl">
-      <HeaderSearch />      
+      <Home />      
     </Container>
   );
 }
