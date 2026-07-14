@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import type { Project } from "../../../shared/types/Project/Project";
 import { CardComponent } from "../../components/CardComponent/CardComponent";
 import { SimpleGrid } from "@mantine/core";
+import { errorNotification } from "../../services/notification.services";
 
 export default function Home() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -16,6 +17,7 @@ export default function Home() {
       const projects = await getProjects();
       setAllProjects(projects);
     } catch (error) {
+      errorNotification("Error", error instanceof Error ? error.message : "An error occurred while fetching the projects.");
       console.error(error);
     }
   }
