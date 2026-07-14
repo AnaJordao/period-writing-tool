@@ -5,6 +5,7 @@ import { DropzoneButton } from "../DropzoneButton/DropzoneButton";
 import classes from "./Modal.module.css";
 import { createProject } from "../../services/project.service";
 import type { ProjectRequest } from "../../../shared/types/Project/Project";
+import { errorNotification, successNotification } from "../../services/notification.services";
 
 interface NewProjectModalProps {
   opened: boolean;
@@ -33,9 +34,13 @@ export function CreateNewProjectModal({ opened, onClose, onCreate }: NewProjectM
       });
       
       onCreate();
+
+      successNotification("Project created", "Your project was created successfully!");
+
       handleClose();
 
     } catch (error) {
+      errorNotification("Error", error instanceof Error ? error.message : "An error occurred while creating the project.");
       console.error(error);
     }
   }
