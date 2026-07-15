@@ -2,7 +2,8 @@ import { IconHeart } from '@tabler/icons-react';
 import { ActionIcon, Badge, Button, Card, Group, Image, Text } from '@mantine/core';
 import classes from './CardComponent.module.css';
 import { normalizeDate } from '../../../shared/utils/normalizeDate';
-import placeholderImage from "../../assets/placeholder-image.png";
+import placeholderImage from '../../assets/placeholder-image.png';
+import { ThreeDotMenu, type MenuItem } from '../ThreeDotMenu/ThreeDotMenu';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -12,9 +13,17 @@ interface CardComponentProps {
   description?: string;
   badges?: { emoji: string; label: string }[];
   createdAt: string;
+  menuItens: MenuItem[];
 }
 
-export function CardComponent({ header, name, description, badges, createdAt }: CardComponentProps) {
+export function CardComponent({
+  header,
+  name,
+  description,
+  badges,
+  createdAt,
+  menuItens,
+}: CardComponentProps) {
   const tags = badges?.map((badge) => (
     <Badge variant="light" key={badge.label} leftSection={badge.emoji}>
       {badge.label}
@@ -23,10 +32,11 @@ export function CardComponent({ header, name, description, badges, createdAt }: 
 
   return (
     <Card withBorder radius="md" p="md" className={classes.card}>
-      <Card.Section>
+      <Card.Section className={classes.cover}>
+        <ThreeDotMenu menuItens={menuItens} />
         {header ? (
           <Image src={`${API_URL}${header}`} alt={name} height={180} />
-          ):(
+        ) : (
           <Image src={placeholderImage} alt={name} height={180} />
         )}
       </Card.Section>
@@ -36,7 +46,7 @@ export function CardComponent({ header, name, description, badges, createdAt }: 
           <Text className={classes.name} fz="h2" fw={500}>
             {name}
           </Text>
-          <Text className={classes.createdTime} c="dimmed" size='xs'>
+          <Text className={classes.createdTime} c="dimmed" size="xs">
             {normalizeDate(createdAt)}
           </Text>
         </Group>

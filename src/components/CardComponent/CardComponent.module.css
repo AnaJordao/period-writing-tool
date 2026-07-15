@@ -9,6 +9,10 @@
   padding-bottom: var(--mantine-spacing-md);
 }
 
+.cover {
+  position: relative;
+}
+
 .like {
   color: var(--mantine-color-red-6);
   width: 20px;

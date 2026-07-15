@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ProjectDto } from './dto/project.dto';
+import { ProjectDto, UpdateProjectDto } from './dto/project.dto';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
@@ -27,10 +27,21 @@ export class ProjectService {
     });
   }
 
-  update(id: string, updateProjectDto: ProjectDto) {
+  update(id: string, updateProjectDto: UpdateProjectDto, filename?: string | null) {
+    const { removeHeader, ...projectData } = updateProjectDto;
+
     return this.prisma.project.update({
       where: { id },
-      data: updateProjectDto,
+      data: {
+        ...projectData,
+        ...(removeHeader &&
+          !filename && {
+            header: null,
+          }),
+        ...(filename && {
+          header: `/uploads/${filename}`,
+        }),
+      },
     });
   }
 
