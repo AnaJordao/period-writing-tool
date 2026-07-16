@@ -1,4 +1,4 @@
-import { IconDots, IconEdit } from '@tabler/icons-react';
+import { IconDots } from '@tabler/icons-react';
 import { ActionIcon, Menu } from '@mantine/core';
 import { Fragment } from 'react/jsx-runtime';
 import classes from './ThreeDotMenu.module.css';
@@ -6,15 +6,17 @@ import classes from './ThreeDotMenu.module.css';
 export interface MenuItem {
   hasMenuLabel?: string;
   menuItemLabel: string;
+  menuItemLabelColor: string;
   onClick: () => void;
   hasDivider?: boolean;
+  icon: React.ReactNode;
 }
 
 interface ThreeDotMenuComponentProps {
-  menuItens?: MenuItem[];
+  menuItems: MenuItem[];
 }
 
-export function ThreeDotMenu({ menuItens = [] }: ThreeDotMenuComponentProps) {
+export function ThreeDotMenu({ menuItems }: ThreeDotMenuComponentProps) {
   return (
     <div className={classes.menu}>
       <Menu
@@ -25,18 +27,19 @@ export function ThreeDotMenu({ menuItens = [] }: ThreeDotMenuComponentProps) {
         withinPortal
       >
         <Menu.Target>
-          <ActionIcon variant="default" style={{ color: 'var(--accent)' }}>
+          <ActionIcon
+            variant="default"
+            style={{ color: 'var(--accent)' }}
+            aria-label="Open three-dot menu"
+          >
             <IconDots size={20} stroke={1.5} />
           </ActionIcon>
         </Menu.Target>
         <Menu.Dropdown>
-          {menuItens.map((prop, index) => (
-            <Fragment key={index}>
+          {menuItems.map((prop) => (
+            <Fragment key={prop.menuItemLabel}>
               {prop.hasMenuLabel && <Menu.Label>{prop.hasMenuLabel}</Menu.Label>}
-              <Menu.Item
-                onClick={prop.onClick}
-                leftSection={<IconEdit size={16} stroke={1.5} style={{ color: 'var(--accent)' }} />}
-              >
+              <Menu.Item onClick={prop.onClick} leftSection={prop.icon} c={prop.menuItemLabelColor}>
                 {prop.menuItemLabel}
               </Menu.Item>
               {prop.hasDivider && <Menu.Divider />}

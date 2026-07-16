@@ -2,14 +2,20 @@ import { useDisclosure } from '@mantine/hooks';
 import { HeaderSearch } from '../../components/HeaderSearch/HeaderSearch';
 import { ProjectModal } from '../../components/ProjectModal/ProjectModal';
 import { getProjects } from '../../services/project.service';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { Project, ProjectRequest } from '../../../shared/types/Project/Project';
 import { CardComponent } from '../../components/CardComponent/CardComponent';
 import { SimpleGrid } from '@mantine/core';
 import { errorNotification } from '../../services/notification.services';
+import { DeleteModal } from '../../components/DeleteModal/DeleteModal';
+import { IconEdit, IconTrash } from '@tabler/icons-react';
 
 export default function Home() {
-  const [opened, { open, close }] = useDisclosure(false);
+  const [search, setSearch] = useState('');
+  const [openedProjectModal, { open: openProjectModal, close: closeProjectModal }] =
+    useDisclosure(false);
+  const [openedDeleteModal, { open: openDeleteModal, close: closeDeleteModal }] =
+    useDisclosure(false);
   const [projectRequest, setProjectRequest] = useState<ProjectRequest>({
     name: '',
     description: '',
@@ -19,6 +25,21 @@ export default function Home() {
   });
   const [allProjects, setAllProjects] = useState<Project[]>([]);
   const [isUpdateMode, setIsUpdateMode] = useState(false);
+
+  const filteredProjects = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    if (!query) {
+      return allProjects;
+    }
+
+    return allProjects.filter((project) => {
+      const name = project.name.toLowerCase();
+      const description = (project.description ?? '').toLowerCase();
+
+      return name.includes(query) || description.includes(query);
+    });
+  }, [allProjects, search]);
 
   function onCleanForm() {
     setProjectRequest({
@@ -33,7 +54,7 @@ export default function Home() {
   function openCreateModal() {
     onCleanForm();
     setIsUpdateMode(false);
-    open();
+    openProjectModal();
   }
 
   function openEditModal(project: Project) {
@@ -47,7 +68,19 @@ export default function Home() {
     });
 
     setIsUpdateMode(true);
-    open();
+    openProjectModal();
+  }
+
+  function openDeleteProjectModal(projectId: string) {
+    setProjectRequest({
+      id: projectId,
+      name: '',
+      description: '',
+      header: null,
+      currentHeader: null,
+      removeHeader: false,
+    });
+    openDeleteModal();
   }
 
   async function fetchProjects() {
@@ -68,20 +101,32 @@ export default function Home() {
 
   return (
     <>
-      <HeaderSearch onClickBtn={openCreateModal} />
+      <HeaderSearch onClickBtn={openCreateModal} search={search} onSearchChange={setSearch} />
 
       <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
-        {allProjects.map((project) => (
+        {filteredProjects.map((project) => (
           <CardComponent
             key={project.id}
             {...project}
-            menuItens={[
+            search={search}
+            menuItems={[
               {
                 menuItemLabel: 'Edit project',
+                menuItemLabelColor: 'var(--accent)',
                 onClick: () => {
                   openEditModal(project);
                 },
                 hasDivider: false,
+                icon: <IconEdit size={16} stroke={1.5} style={{ color: 'var(--accent)' }} />,
+              },
+              {
+                menuItemLabel: 'Delete project',
+                menuItemLabelColor: 'var(--error-bg)',
+                onClick: () => {
+                  openDeleteProjectModal(project.id);
+                },
+                hasDivider: false,
+                icon: <IconTrash size={16} stroke={1.5} style={{ color: 'var(--error-bg)' }} />,
               },
             ]}
           />
@@ -89,13 +134,22 @@ export default function Home() {
       </SimpleGrid>
 
       <ProjectModal
-        opened={opened}
-        onClose={close}
+        opened={openedProjectModal}
+        onClose={closeProjectModal}
         onClean={onCleanForm}
         projectRequest={projectRequest}
         setProjectRequest={setProjectRequest}
         isUpdateMode={isUpdateMode}
         onSave={() => {
+          void fetchProjects();
+        }}
+      />
+
+      <DeleteModal
+        opened={openedDeleteModal}
+        projectRequest={projectRequest}
+        onClose={closeDeleteModal}
+        onDelete={() => {
           void fetchProjects();
         }}
       />

@@ -1,0 +1,24 @@
+.title {
+  color: var(--error-bg);
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.body {
+  max-height: 70vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.text {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--mantine-color-gray-7);
+}

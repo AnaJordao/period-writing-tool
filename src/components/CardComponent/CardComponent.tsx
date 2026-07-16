@@ -4,6 +4,7 @@ import classes from './CardComponent.module.css';
 import { normalizeDate } from '../../../shared/utils/normalizeDate';
 import placeholderImage from '../../assets/placeholder-image.png';
 import { ThreeDotMenu, type MenuItem } from '../ThreeDotMenu/ThreeDotMenu';
+import { HighlightText } from '../HighlightText/HighlightText';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -13,7 +14,8 @@ interface CardComponentProps {
   description?: string;
   badges?: { emoji: string; label: string }[];
   createdAt: string;
-  menuItens: MenuItem[];
+  menuItems: MenuItem[];
+  search: string;
 }
 
 export function CardComponent({
@@ -22,7 +24,8 @@ export function CardComponent({
   description,
   badges,
   createdAt,
-  menuItens,
+  menuItems,
+  search,
 }: CardComponentProps) {
   const tags = badges?.map((badge) => (
     <Badge variant="light" key={badge.label} leftSection={badge.emoji}>
@@ -33,7 +36,7 @@ export function CardComponent({
   return (
     <Card withBorder radius="md" p="md" className={classes.card}>
       <Card.Section className={classes.cover}>
-        <ThreeDotMenu menuItens={menuItens} />
+        <ThreeDotMenu menuItems={menuItems} />
         {header ? (
           <Image src={`${API_URL}${header}`} alt={name} height={180} />
         ) : (
@@ -44,14 +47,14 @@ export function CardComponent({
       <Card.Section className={classes.section} mt="md">
         <Group className={classes.firstSection}>
           <Text className={classes.name} fz="h2" fw={500}>
-            {name}
+            <HighlightText text={name} highlight={search} />
           </Text>
           <Text className={classes.createdTime} c="dimmed" size="xs">
             {normalizeDate(createdAt)}
           </Text>
         </Group>
         <Text fz="sm" mt="xs">
-          {description}
+          <HighlightText text={description ?? ''} highlight={search} />
         </Text>
       </Card.Section>
 

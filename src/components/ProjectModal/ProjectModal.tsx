@@ -43,6 +43,9 @@ export function ProjectModal({
           removeHeader: projectRequest.removeHeader,
         });
       } else {
+        if (!projectRequest.name) {
+          throw new Error('Project name is required.');
+        }
         await createProject({
           name: projectRequest.name,
           description: projectRequest.description,
@@ -79,6 +82,7 @@ export function ProjectModal({
         title: classes.title,
         body: classes.body,
       }}
+      aria-label="Project Modal"
     >
       <FloatingLabelInput
         label="Project name"
