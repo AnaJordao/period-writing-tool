@@ -5,7 +5,8 @@
     "types": [
       "node",
       "express",
-      "multer"
+      "multer",
+      "jest"
     ],
     "resolvePackageJsonExports": true,
     "esModuleInterop": true,

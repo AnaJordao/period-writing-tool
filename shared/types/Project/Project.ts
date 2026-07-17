@@ -9,7 +9,10 @@ export interface Project {
 }
 
 export interface ProjectRequest {
+  id?: string;
   name: string;
   description?: string;
   header?: File | null;
+  currentHeader?: string | null;
+  removeHeader?: boolean;
 }

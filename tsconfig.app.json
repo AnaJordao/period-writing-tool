@@ -22,5 +22,5 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "shared/types", "shared/utils"]
+  "include": ["src", "shared/types", "shared/utils", "src/tests"]
 }

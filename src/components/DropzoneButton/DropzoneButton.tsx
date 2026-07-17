@@ -4,30 +4,48 @@ import { Button, Group, Image, Text, useMantineTheme, ActionIcon } from '@mantin
 import { Dropzone, MIME_TYPES } from '@mantine/dropzone';
 import classes from './DropzoneButton.module.css';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 interface DropzoneButtonProps {
-  header: File | null;
-  setheader: (file: File | null) => void;
+  headerFile: File | null;
+  currentHeader: string | null;
+  removeHeader: boolean;
+  onRemoveHeader: () => void;
+  setHeader: (file: File | null) => void;
 }
 
 export function DropzoneButton({
-  header,
-  setheader,
+  headerFile,
+  currentHeader,
+  removeHeader,
+  onRemoveHeader,
+  setHeader,
 }: DropzoneButtonProps) {
   const theme = useMantineTheme();
   const openRef = useRef<() => void>(null);
 
   const preview = useMemo(() => {
-    if (!header) {
-      return null;
+    if (headerFile) {
+      return {
+        src: URL.createObjectURL(headerFile),
+        isObjectUrl: true,
+      };
     }
 
-    return URL.createObjectURL(header);
-  }, [header]);
+    if (currentHeader && !removeHeader) {
+      return {
+        src: `${API_URL}${currentHeader}`,
+        isObjectUrl: false,
+      };
+    }
+
+    return null;
+  }, [headerFile, currentHeader, removeHeader]);
 
   useEffect(() => {
     return () => {
-      if (preview) {
-        URL.revokeObjectURL(preview);
+      if (preview?.isObjectUrl) {
+        URL.revokeObjectURL(preview.src);
       }
     };
   }, [preview]);
@@ -38,7 +56,7 @@ export function DropzoneButton({
         openRef={openRef}
         onDrop={(files) => {
           if (files.length > 0) {
-            setheader(files[0]);
+            setHeader(files[0]);
           }
         }}
         className={classes.dropzone}
@@ -67,13 +85,12 @@ export function DropzoneButton({
           </Text>
 
           <Text className={classes.description}>
-            Drag&apos;n&apos;drop a file here to upload. We can accept only <i>.jpeg</i>, <i>.png</i>, <i>.svg</i>, and <i>.webp</i> files that
-            are less than 30mb in size.
+            Drag&apos;n&apos;drop a file here to upload. We can accept only <i>.jpeg</i>,{' '}
+            <i>.png</i>, <i>.svg</i>, and <i>.webp</i> files that are less than 30mb in size.
           </Text>
-          
         </div>
       </Dropzone>
-      {header && preview && (
+      {preview && (
         <div className={classes.previewContainer}>
           <ActionIcon
             className={classes.removeButton}
@@ -81,24 +98,25 @@ export function DropzoneButton({
             variant="filled"
             radius="xl"
             onClick={() => {
-                setheader(null);
-              }}
+              setHeader(null);
+              onRemoveHeader();
+            }}
             aria-label="Remove image"
           >
             <IconX size={16} />
           </ActionIcon>
 
-          <Image
-            src={preview}
-            h={180}
-            radius="md"
-            fit="cover"
-          />
+          <Image src={preview.src} h={180} radius="md" fit="cover" />
         </div>
       )}
 
-
-      <Button className={classes.control} color="violet" size="md" radius="xl" onClick={() => openRef.current?.()}>
+      <Button
+        className={classes.control}
+        color="violet"
+        size="md"
+        radius="xl"
+        onClick={() => openRef.current?.()}
+      >
         Select files
       </Button>
     </div>

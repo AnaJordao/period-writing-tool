@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { ProjectDto } from './dto/project.dto';
+import { ProjectDto, UpdateProjectDto } from './dto/project.dto';
 import { PrismaService } from '../../prisma/prisma.service';
+import { Project } from '@prisma/client';
 
 @Injectable()
 export class ProjectService {
   constructor(private prisma: PrismaService) {}
 
-  create(createProjectDto: ProjectDto, filename?: string | null) {
-    return this.prisma.project.create({
+  async create(createProjectDto: ProjectDto, filename?: string | null): Promise<Project> {
+    return await this.prisma.project.create({
       data: {
         ...createProjectDto,
         header: filename ? `/uploads/${filename}` : null,
@@ -27,10 +28,21 @@ export class ProjectService {
     });
   }
 
-  update(id: string, updateProjectDto: ProjectDto) {
+  update(id: string, updateProjectDto: UpdateProjectDto, filename?: string | null) {
+    const { removeHeader, ...projectData } = updateProjectDto;
+
     return this.prisma.project.update({
       where: { id },
-      data: updateProjectDto,
+      data: {
+        ...projectData,
+        ...(removeHeader &&
+          !filename && {
+            header: null,
+          }),
+        ...(filename && {
+          header: `/uploads/${filename}`,
+        }),
+      },
     });
   }
 
