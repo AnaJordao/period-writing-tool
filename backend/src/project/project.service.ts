@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { ProjectDto, UpdateProjectDto } from './dto/project.dto';
 import { PrismaService } from '../../prisma/prisma.service';
+import { Project } from '@prisma/client';
 
 @Injectable()
 export class ProjectService {
   constructor(private prisma: PrismaService) {}
 
-  create(createProjectDto: ProjectDto, filename?: string | null) {
-    return this.prisma.project.create({
+  async create(createProjectDto: ProjectDto, filename?: string | null): Promise<Project> {
+    return await this.prisma.project.create({
       data: {
         ...createProjectDto,
         header: filename ? `/uploads/${filename}` : null,
