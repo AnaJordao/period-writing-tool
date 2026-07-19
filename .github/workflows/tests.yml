@@ -63,6 +63,20 @@ jobs:
         run: npm run test:cov
 
       #############################
+      # Publish test results
+      #############################
+
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Test Results
+          path: |
+            test-results/frontend-tests.xml
+            backend/test-results/backend-tests.xml
+          reporter: java-junit
+
+      #############################
       # Upload coverage
       #############################
 

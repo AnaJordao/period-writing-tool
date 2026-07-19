@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:cov": "vitest run --coverage"
+    "test:cov": "vitest run --coverage  --reporter=junit --outputFile=test-results/frontend-tests.xml"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

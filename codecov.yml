@@ -1,5 +1,5 @@
 comment:
-  layout: "header, diff, flags, files"
+  layout: "header, reach, diff, flags, files"
   behavior: default
   require_changes: false
   require_base: false
@@ -16,3 +16,12 @@ coverage:
     patch:
       default:
         target: 80%
+
+flags:
+  frontend:
+    paths:
+      - src/
+
+  backend:
+    paths:
+      - backend/src/
