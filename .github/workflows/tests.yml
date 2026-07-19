@@ -143,7 +143,7 @@ jobs:
         
       - name: Build PR summary
         if: github.event_name == 'pull_request'
-        run: node .github/scripts/pr-summary.mjs
+        run: node .github/scripts/test-summary.mjs
 
       - name: Find previous comment
         if: github.event_name == 'pull_request'
@@ -160,5 +160,5 @@ jobs:
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
-          body-path: pr-comment.md
+          body-path: test-summary.md
           edit-mode: replace
