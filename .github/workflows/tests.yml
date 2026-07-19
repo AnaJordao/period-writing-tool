@@ -63,13 +63,40 @@ jobs:
       # Publish test results
       #############################
 
-      - name: Publish test results
-        uses: dorny/test-reporter@v1
+      - name: Verify test reports
         if: always()
+        run: |
+          find . -name "*.xml"
+
+
+      - name: Publish frontend tests
+        if: always()
+        uses: dorny/test-reporter@v1
         with:
-          name: Test Results
-          path: "**/test-results/*.xml"
+          name: Frontend Tests
+          path: test-results/frontend-tests.xml
           reporter: java-junit
+          fail-on-error: true
+          list-tests: all
+
+      - name: Publish backend tests
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: Backend Tests
+          path: backend/test-results/backend-tests.xml
+          reporter: java-junit
+          fail-on-error: true
+          list-tests: all
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-reports
+          path: |
+            test-results/frontend-tests.xml
+            backend/test-results/backend-tests.xml
 
       #############################
       # Upload coverage
@@ -109,3 +136,27 @@ jobs:
         with:
           name: backend-coverage
           path: backend/coverage
+
+      #############################
+      # Create PR summary
+      #############################
+        
+      - name: Build PR summary
+        if: always()
+        run: node .github/scripts/pr-summary.mjs
+
+      - name: Find previous comment
+        uses: peter-evans/find-comment@v3
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: "## 🧪 Test Summary"
+
+      - name: Create or update comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body-path: test-summary.md
+          edit-mode: replace
