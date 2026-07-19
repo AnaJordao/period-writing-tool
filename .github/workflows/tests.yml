@@ -41,6 +41,11 @@ jobs:
       - name: Run frontend tests with coverage
         run: npm run test:cov
 
+      - name: Check frontend coverage
+        run: |
+          ls -la
+          ls -la coverage || true
+
       #############################
       # Backend
       #############################
@@ -60,6 +65,9 @@ jobs:
       #############################
       # Upload coverage
       #############################
+
+      - name: Check coverage files
+        run: find . -name "lcov.info"
 
       - name: Upload frontend coverage
         uses: codecov/codecov-action@v5
