@@ -38,6 +38,9 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
+      - name: Run frontend tests with report
+        run: npm run test:ci
+
       - name: Run frontend tests with coverage
         run: npm run test:cov
 
@@ -57,6 +60,10 @@ jobs:
       - name: Generate Prisma Client
         working-directory: backend
         run: npx prisma generate
+
+      - name: Run backend tests with report
+        working-directory: backend
+        run: npm run test:ci
 
       - name: Run backend tests with coverage
         working-directory: backend
