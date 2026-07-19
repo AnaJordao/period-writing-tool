@@ -15,9 +15,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: read
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -38,11 +35,8 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
-      - name: Run frontend tests with report
+      - name: Run frontend tests
         run: npm run test:ci
-
-      - name: Run frontend tests with coverage
-        run: npm run test:cov
 
       - name: Check frontend coverage
         run: |
@@ -61,13 +55,9 @@ jobs:
         working-directory: backend
         run: npx prisma generate
 
-      - name: Run backend tests with report
+      - name: Run backend tests
         working-directory: backend
         run: npm run test:ci
-
-      - name: Run backend tests with coverage
-        working-directory: backend
-        run: npm run test:cov
 
       #############################
       # Publish test results

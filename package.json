@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:ci": "vitest run  --reporter=junit --outputFile=test-results/frontend-tests.xml",
+    "test:ci": "vitest run --coverage --reporter=junit --outputFile=test-results/frontend-tests.xml",
     "test:cov": "vitest run --coverage"
   },
   "dependencies": {
