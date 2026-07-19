@@ -1,5 +1,9 @@
 # ✏️ Period - Writing Tool
 
+[![Frontend codecov](https://codecov.io/github/AnaJordao/period-writing-tool/branch/main/graph/badge.svg?flag=frontend&token=PVG2E7REVJ)](https://codecov.io/github/AnaJordao/period-writing-tool)
+
+[![Backend codecov](https://codecov.io/github/AnaJordao/period-writing-tool/branch/main/graph/badge.svg?flag=backend&token=PVG2E7REVJ)](https://codecov.io/github/AnaJordao/period-writing-tool)
+
 Period is an application that helps to manage writing sessions easily.
 
 ## How to run?
