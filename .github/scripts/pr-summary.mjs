@@ -9,13 +9,39 @@ function readJUnit(path) {
   const xml = fs.readFileSync(path, "utf8");
   const report = parser.parse(xml);
 
-  const suite = report.testsuites?.testsuite ?? report.testsuite;
+  const suites = report.testsuites?.testsuite ?? report.testsuite;
+
+  const suiteList = Array.isArray(suites) ? suites : [suites];
+
+  const failedTests = [];
+
+  for (const suite of suiteList) {
+    if (!suite.testcase) continue;
+
+    const testcases = Array.isArray(suite.testcase)
+      ? suite.testcase
+      : [suite.testcase];
+
+    for (const test of testcases) {
+      if (test.failure) {
+        failedTests.push({
+          suite: suite["@_name"] ?? "",
+          name: test["@_name"] ?? "",
+          message:
+            typeof test.failure === "object"
+              ? (test.failure["@_message"] ?? "")
+              : "",
+        });
+      }
+    }
+  }
 
   return {
-    tests: Number(suite["@_tests"] ?? 0),
-    failures: Number(suite["@_failures"] ?? 0),
-    skipped: Number(suite["@_skipped"] ?? 0),
-    time: Number(suite["@_time"] ?? 0),
+    tests: suiteList.reduce((a, s) => a + Number(s["@_tests"] ?? 0), 0),
+    failures: suiteList.reduce((a, s) => a + Number(s["@_failures"] ?? 0), 0),
+    skipped: suiteList.reduce((a, s) => a + Number(s["@_skipped"] ?? 0), 0),
+    time: suiteList.reduce((a, s) => a + Number(s["@_time"] ?? 0), 0),
+    failedTests,
   };
 }
 
@@ -46,6 +72,24 @@ const overallCoverage = ((totalCovered / totalLines) * 100).toFixed(1);
 
 const success = totalFailures === 0;
 
+const failedSection = (title, tests) => {
+  if (!tests.length) {
+    return `### ${title}\n\n✅ No failed tests.\n`;
+  }
+
+  return `### ${title}
+
+${tests
+  .map(
+    (t) =>
+      `- ❌ **${t.name}**
+  - Suite: \`${t.suite}\`
+  ${t.message ? `- Message: ${t.message}` : ""}`,
+  )
+  .join("\n\n")}
+`;
+};
+
 const markdown = `# 🚀 CI Report
 
 ## ${success ? "✅ Summary" : "❌ Summary"}
@@ -72,6 +116,10 @@ const markdown = `# 🚀 CI Report
 | Skipped | ${frontendTests.skipped} |
 | Time | ${frontendTests.time}s |
 
+${failedSection("Frontend Failed Tests", frontendTests.failedTests)}
+
+---
+
 ### Backend
 
 | Metric | Value |
@@ -80,6 +128,8 @@ const markdown = `# 🚀 CI Report
 | Failed | ${backendTests.failures} |
 | Skipped | ${backendTests.skipped} |
 | Time | ${backendTests.time}s |
+
+${failedSection("Backend Failed Tests", backendTests.failedTests)}
 
 </details>
 
@@ -116,4 +166,4 @@ const markdown = `# 🚀 CI Report
 *Generated automatically by GitHub Actions.*
 `;
 
-fs.writeFileSync("pr-comment.md", markdown);
+fs.writeFileSync("test-summary.md", markdown);
