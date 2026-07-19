@@ -1,4 +1,4 @@
-name: Tests & Coverage
+name: Tests
 
 on:
   push:
@@ -6,83 +6,82 @@ on:
       - "**"
   pull_request:
 
-permissions:
-  contents: read
-
 jobs:
-  frontend:
-    name: Frontend
+  test:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: frontend
+    permissions:
+      contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
 
-      - run: npm ci
-      - run: npm run test:cov
+      #############################
+      # Frontend
+      #############################
 
-      - name: Frontend coverage
-        uses: irongut/CodeCoverageSummary@v1.3.0
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Run frontend tests with coverage
+        run: npm run test:cov
+
+      #############################
+      # Backend
+      #############################
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Generate Prisma Client
+        working-directory: backend
+        run: npx prisma generate
+
+      - name: Run backend tests with coverage
+        working-directory: backend
+        run: npm run test:cov
+
+      #############################
+      # Upload coverage
+      #############################
+
+      - name: Upload frontend coverage
+        uses: codecov/codecov-action@v5
         with:
-          filename: frontend/coverage/lcov.info
-          badge: true
-          format: markdown
-          output: file
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage/lcov.info
+          flags: frontend
+          name: frontend
+          fail_ci_if_error: true
 
-      - name: Publish summary
-        run: |
-          echo "# Frontend Coverage" >> $GITHUB_STEP_SUMMARY
-          cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
+      - name: Upload backend coverage
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: backend/coverage/lcov.info
+          flags: backend
+          name: backend
+          fail_ci_if_error: true
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload frontend coverage artifact
+        uses: actions/upload-artifact@v4
         with:
           name: frontend-coverage
-          path: frontend/coverage
+          path: coverage
 
-  backend:
-    name: Backend
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: backend
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: backend/package-lock.json
-
-      - run: npm ci
-      - run: npx prisma generate
-      - run: npm run test:cov
-
-      - name: Backend coverage
-        uses: irongut/CodeCoverageSummary@v1.3.0
-        with:
-          filename: backend/coverage/lcov.info
-          badge: true
-          format: markdown
-          output: file
-
-      - name: Publish summary
-        run: |
-          echo "# Backend Coverage" >> $GITHUB_STEP_SUMMARY
-          cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
-
-      - uses: actions/upload-artifact@v4
+      - name: Upload backend coverage artifact
+        uses: actions/upload-artifact@v4
         with:
           name: backend-coverage
           path: backend/coverage
