@@ -7,7 +7,7 @@ import { render } from '../../tests/render';
 
 import { createProject, updateProject } from '../../services/project.service';
 import { successNotification, errorNotification } from '../../services/notification.services';
-import type { Project } from '../../../shared/types/Project/Project';
+import type { Project } from '@period-writing-tool/shared';
 
 vi.mock('../../services/project.service', () => ({
   createProject: vi.fn(),

@@ -3,12 +3,13 @@ import { HeaderSearch } from '../../components/HeaderSearch/HeaderSearch';
 import { ProjectModal } from '../../components/ProjectModal/ProjectModal';
 import { getProjects } from '../../services/project.service';
 import { useEffect, useMemo, useState } from 'react';
-import type { Project, ProjectRequest } from '../../../shared/types/Project/Project';
+import type { Project, ProjectRequest, ProjectSorting } from '@period-writing-tool/shared';
 import { CardComponent } from '../../components/CardComponent/CardComponent';
-import { SimpleGrid } from '@mantine/core';
+import { Group, SimpleGrid } from '@mantine/core';
 import { errorNotification } from '../../services/notification.services';
 import { DeleteModal } from '../../components/DeleteModal/DeleteModal';
 import { IconEdit, IconTrash } from '@tabler/icons-react';
+import { GradientSegmentedControl } from '../../components/GradientSegmentedControl/GradientSegmentedControl';
 
 export default function Home() {
   const [search, setSearch] = useState('');
@@ -25,6 +26,10 @@ export default function Home() {
   });
   const [allProjects, setAllProjects] = useState<Project[]>([]);
   const [isUpdateMode, setIsUpdateMode] = useState(false);
+  const [projectSorting, setProjectSorting] = useState<ProjectSorting>({
+    sortBy: 'updatedAt',
+    order: 'desc',
+  });
 
   const filteredProjects = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -40,6 +45,17 @@ export default function Home() {
       return name.includes(query) || description.includes(query);
     });
   }, [allProjects, search]);
+
+  const sortByOptions = [
+    { value: 'name', label: 'Name' },
+    { value: 'createdAt', label: 'Date of creation' },
+    { value: 'updatedAt', label: 'Date of modification' },
+  ] as { value: ProjectSorting['sortBy']; label: string }[];
+
+  const orderOptions = [
+    { value: 'asc', label: 'Ascending' },
+    { value: 'desc', label: 'Descending' },
+  ] as { value: ProjectSorting['order']; label: string }[];
 
   function onCleanForm() {
     setProjectRequest({
@@ -85,7 +101,7 @@ export default function Home() {
 
   async function fetchProjects() {
     try {
-      const projects = await getProjects();
+      const projects = await getProjects(projectSorting);
       setAllProjects(projects);
     } catch (error) {
       errorNotification(
@@ -102,6 +118,32 @@ export default function Home() {
   return (
     <>
       <HeaderSearch onClickBtn={openCreateModal} search={search} onSearchChange={setSearch} />
+
+      <Group mt="md" mb="md">
+        <GradientSegmentedControl
+          label="Sort by"
+          data={sortByOptions}
+          value={projectSorting.sortBy}
+          onChange={(value) => {
+            setProjectSorting({
+              ...projectSorting,
+              sortBy: value as ProjectSorting['sortBy'],
+            });
+          }}
+        />
+
+        <GradientSegmentedControl
+          label="Order"
+          data={orderOptions}
+          value={projectSorting.order}
+          onChange={(value) => {
+            setProjectSorting({
+              ...projectSorting,
+              order: value as ProjectSorting['order'],
+            });
+          }}
+        />
+      </Group>
 
       <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
         {filteredProjects.map((project) => (

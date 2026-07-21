@@ -16,3 +16,8 @@ export interface ProjectRequest {
   currentHeader?: string | null;
   removeHeader?: boolean;
 }
+
+export interface ProjectSorting {
+  sortBy: "name" | "createdAt" | "updatedAt";
+  order: "asc" | "desc";
+}

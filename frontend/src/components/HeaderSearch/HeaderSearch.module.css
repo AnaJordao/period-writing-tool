@@ -1,7 +1,7 @@
 .header {
   height: 56px;
   width: 100%;
-  margin-bottom: 60px;
+  margin-bottom: 30px;
   background-color: var(--mantine-color-body);
   border-bottom: 1px solid light-dark(var(--accent), var(--accent));
   padding-left: var(--mantine-spacing-md);

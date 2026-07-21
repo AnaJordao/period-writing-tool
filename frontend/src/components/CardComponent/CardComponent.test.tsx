@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { screen } from '@testing-library/react';
 import { CardComponent } from './CardComponent';
 import { render } from '../../tests/render';
-import { normalizeDate } from '../../../shared/utils/normalizeDate';
+import { normalizeDate } from '@period-writing-tool/shared';
 
 const menuItems = [
   {

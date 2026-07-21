@@ -1,7 +1,7 @@
 import { Modal, Button, Group, Text } from '@mantine/core';
 import classes from './DeleteModal.module.css';
 import { deleteProject } from '../../services/project.service';
-import type { ProjectRequest } from '../../../shared/types/Project/Project';
+import type { ProjectRequest } from '@period-writing-tool/shared';
 import { errorNotification, successNotification } from '../../services/notification.services';
 
 interface DeleteModalProps {

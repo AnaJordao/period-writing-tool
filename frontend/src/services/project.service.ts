@@ -1,4 +1,4 @@
-import type { Project, ProjectRequest } from '../../shared/types/Project/Project';
+import type { Project, ProjectRequest, ProjectSorting } from '@period-writing-tool/shared';
 import { api } from './api';
 
 export async function createProject(data: ProjectRequest) {
@@ -50,8 +50,13 @@ export async function updateProject(id: string, data: Partial<ProjectRequest>) {
   return response.data;
 }
 
-export async function getProjects() {
-  const response = await api.get<Project[]>('/project');
+export async function getProjects({ sortBy, order }: ProjectSorting) {
+  const response = await api.get<Project[]>('/project', {
+    params: {
+      sortBy,
+      order,
+    },
+  });
   return response.data;
 }
 

@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react';
 import { HeaderSearch } from './HeaderSearch.tsx';
 import { describe, it, expect, vi } from 'vitest';
-import { render } from '../../tests/render';
+import { render } from '../../tests/render.tsx';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 

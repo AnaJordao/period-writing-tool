@@ -3,7 +3,7 @@ import { FloatingLabelInput } from '../FloatingLabelInput/FloatingLabelInput';
 import { DropzoneButton } from '../DropzoneButton/DropzoneButton';
 import classes from './ProjectModal.module.css';
 import { createProject, updateProject } from '../../services/project.service';
-import type { ProjectRequest } from '../../../shared/types/Project/Project';
+import type { ProjectRequest } from '@period-writing-tool/shared';
 import { errorNotification, successNotification } from '../../services/notification.services';
 
 interface ProjectModalProps {

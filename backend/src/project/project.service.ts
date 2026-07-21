@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ProjectDto, UpdateProjectDto } from './dto/project.dto';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Project } from '@prisma/client';
+import { ProjectSorting } from '@period-writing-tool/shared';
 
 @Injectable()
 export class ProjectService {
@@ -16,9 +17,10 @@ export class ProjectService {
     });
   }
 
-  findAll() {
+  findAll({ sortBy, order }: ProjectSorting) {
     return this.prisma.project.findMany({
       where: { deletedAt: null },
+      orderBy: { [sortBy]: order },
     });
   }
 

@@ -1,7 +1,7 @@
 import { IconHeart } from '@tabler/icons-react';
 import { ActionIcon, Badge, Button, Card, Group, Image, Text } from '@mantine/core';
 import classes from './CardComponent.module.css';
-import { normalizeDate } from '../../../shared/utils/normalizeDate';
+import { normalizeDate } from '@period-writing-tool/shared';
 import placeholderImage from '../../assets/placeholder-image.png';
 import { ThreeDotMenu, type MenuItem } from '../ThreeDotMenu/ThreeDotMenu';
 import { HighlightText } from '../HighlightText/HighlightText';

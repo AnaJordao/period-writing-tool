@@ -4,7 +4,7 @@ import { render } from '../../tests/render';
 import { getProjects } from '../../services/project.service';
 import userEvent from '@testing-library/user-event';
 import { errorNotification } from '../../services/notification.services';
-import type { Project } from '../../../shared/types/Project/Project';
+import type { Project } from '@period-writing-tool/shared';
 import Home from './Home';
 
 vi.mock('../../services/project.service', () => ({
