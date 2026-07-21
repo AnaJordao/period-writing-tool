@@ -113,7 +113,7 @@ export default function Home() {
   }
   useEffect(() => {
     void fetchProjects();
-  }, []);
+  }, [projectSorting]);
 
   return (
     <>
@@ -121,7 +121,7 @@ export default function Home() {
 
       <Group mt="md" mb="md">
         <GradientSegmentedControl
-          label="Sort by"
+          label="Sort by:"
           data={sortByOptions}
           value={projectSorting.sortBy}
           onChange={(value) => {
@@ -133,7 +133,7 @@ export default function Home() {
         />
 
         <GradientSegmentedControl
-          label="Order"
+          label="Order:"
           data={orderOptions}
           value={projectSorting.order}
           onChange={(value) => {

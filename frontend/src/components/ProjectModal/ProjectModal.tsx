@@ -109,17 +109,18 @@ export function ProjectModal({
         currentHeader={projectRequest.currentHeader ?? null}
         removeHeader={projectRequest.removeHeader ?? false}
         setHeader={(file) => {
-          setProjectRequest({
-            ...projectRequest,
+          setProjectRequest((prev) => ({
+            ...prev,
             header: file,
-          });
+            removeHeader: false,
+          }));
         }}
         onRemoveHeader={() => {
-          setProjectRequest({
-            ...projectRequest,
+          setProjectRequest((prev) => ({
+            ...prev,
             removeHeader: true,
             currentHeader: null,
-          });
+          }));
         }}
       />
 

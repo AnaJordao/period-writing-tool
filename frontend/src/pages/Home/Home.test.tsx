@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/require-await */
 import { describe, it, expect, vi } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 import { render } from '../../tests/render';
@@ -40,7 +41,7 @@ vi.mock('../../components/HeaderSearch/HeaderSearch', () => ({
 
 vi.mock('../../components/CardComponent/CardComponent', () => ({
   CardComponent: ({ name, menuItems }: { name: string; menuItems: { onClick: () => void }[] }) => (
-    <div>
+    <div data-testid="project-card">
       <span>{name}</span>
 
       <button onClick={menuItems[0].onClick}>Edit</button>
@@ -154,5 +155,95 @@ describe('Home', () => {
     await waitFor(() => {
       expect(errorNotification).toHaveBeenCalledWith('Error', 'Server error');
     });
+  });
+
+  it('renders projects sorted by the API', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(getProjects).mockImplementation(async (sorting) => {
+      if (sorting.sortBy === 'updatedAt' && sorting.order === 'desc') {
+        return [
+          {
+            id: '2',
+            name: 'Project B',
+            updatedAt: '2025-03-01T00:00:00Z',
+            createdAt: '2025-01-01T00:00:00Z',
+            description: '',
+            header: undefined,
+          },
+          {
+            id: '1',
+            name: 'Project A',
+            updatedAt: '2025-01-01T00:00:00Z',
+            createdAt: '2025-01-01T00:00:00Z',
+            description: '',
+            header: undefined,
+          },
+        ];
+      }
+
+      return [
+        {
+          id: '1',
+          name: 'Project A',
+          updatedAt: '2025-01-01T00:00:00Z',
+          createdAt: '2025-01-01T00:00:00Z',
+          description: '',
+          header: undefined,
+        },
+        {
+          id: '2',
+          name: 'Project B',
+          updatedAt: '2025-03-01T00:00:00Z',
+          createdAt: '2025-01-01T00:00:00Z',
+          description: '',
+          header: undefined,
+        },
+      ];
+    });
+
+    render(<Home />);
+
+    // Wait for projects to appear
+    await screen.findByText('Project A');
+    await screen.findByText('Project B');
+
+    // Click Updated At
+    await user.click(screen.getByRole('radio', { name: /Date of modification/i }));
+    await user.click(screen.getByRole('radio', { name: /Descending/i }));
+
+    // Verify service was called with the correct sorting
+    await waitFor(() => {
+      expect(getProjects).toHaveBeenCalled();
+      expect(getProjects).toHaveBeenLastCalledWith({
+        sortBy: 'updatedAt',
+        order: 'desc',
+      });
+    });
+
+    const projects = screen.getAllByTestId('project-card');
+    const names = projects.map((card) => card.textContent);
+
+    expect(names[0]).toContain('Project B');
+    expect(names[1]).toContain('Project A');
+
+    // Click Name
+    await user.click(screen.getByRole('radio', { name: /Name/i }));
+    await user.click(screen.getByRole('radio', { name: /Ascending/i }));
+
+    // Verify service was called with the correct sorting
+    await waitFor(() => {
+      expect(getProjects).toHaveBeenCalled();
+      expect(getProjects).toHaveBeenLastCalledWith({
+        sortBy: 'name',
+        order: 'asc',
+      });
+    });
+
+    const projects2 = screen.getAllByTestId('project-card');
+    const names2 = projects2.map((card) => card.textContent);
+
+    expect(names2[0]).toContain('Project A');
+    expect(names2[1]).toContain('Project B');
   });
 });

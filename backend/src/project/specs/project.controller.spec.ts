@@ -44,9 +44,10 @@ describe('ProjectController', () => {
   });
 
   it('calls service.findAll()', async () => {
-    await controller.findAll();
+    await controller.findAll('name', 'asc');
 
     expect(serviceMock.findAll).toHaveBeenCalledTimes(1);
+    expect(serviceMock.findAll).toHaveBeenCalledWith({ sortBy: 'name', order: 'asc' });
   });
 
   it('calls service.findOne()', async () => {

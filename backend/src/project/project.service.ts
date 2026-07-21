@@ -20,7 +20,9 @@ export class ProjectService {
   findAll({ sortBy, order }: ProjectSorting) {
     return this.prisma.project.findMany({
       where: { deletedAt: null },
-      orderBy: { [sortBy]: order },
+      orderBy: {
+        [sortBy]: order,
+      },
     });
   }
 

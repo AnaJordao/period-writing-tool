@@ -2,7 +2,7 @@ import { Group, SegmentedControl, Text } from '@mantine/core';
 import classes from './GradientSegmentedControl.module.css';
 import type { ProjectSorting } from '@period-writing-tool/shared';
 
-interface GradientSegmentedControlProps {
+export interface GradientSegmentedControlProps {
   label: string;
   data: { value: ProjectSorting['sortBy'] | ProjectSorting['order']; label: string }[];
   value: ProjectSorting['sortBy'] | ProjectSorting['order'];
@@ -16,14 +16,13 @@ export function GradientSegmentedControl({
   onChange,
 }: GradientSegmentedControlProps) {
   return (
-    <Group>
+    <Group aria-label={label}>
       <Text size="sm" color="dimmed" className={classes.label}>
         {label}
       </Text>
       <SegmentedControl
-        aria-label={label}
         radius="xl"
-        size="md"
+        size="xs"
         data={data}
         classNames={classes}
         value={value}

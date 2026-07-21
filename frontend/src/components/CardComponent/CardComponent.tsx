@@ -34,7 +34,7 @@ export function CardComponent({
   ));
 
   return (
-    <Card withBorder radius="md" p="md" className={classes.card}>
+    <Card data-testid={'project-card'} withBorder radius="md" p="md" className={classes.card}>
       <Card.Section className={classes.cover}>
         <ThreeDotMenu menuItems={menuItems} />
         {header ? (
