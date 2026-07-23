@@ -5,5 +5,8 @@
     "frontend/",
     "backend/",
     "shared/"
-  ]
+  ],
+  "devDependencies": {
+    "fast-xml-parser": "^5.10.1"
+  }
 }
