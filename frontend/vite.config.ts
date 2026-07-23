@@ -18,6 +18,7 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "json", "html", "lcov", "json-summary"],
     },
-    exclude: ["**/node_modules/**", "**/dist/**", "backend/**"],
+    include: ["src/**/*.{test,spec}.{ts,tsx}"],
+    exclude: ["**/node_modules/**", "**/dist/**"],
   },
 });
