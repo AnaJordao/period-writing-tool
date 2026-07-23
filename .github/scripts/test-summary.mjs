@@ -51,16 +51,15 @@ function readCoverage(path) {
   return json.total;
 }
 
-const frontendTests = readJUnit("test-results/frontend-tests.xml");
-
+const frontendTests = readJUnit("frontend/test-results/frontend-tests.xml");
 const backendTests = readJUnit("backend/test-results/backend-tests.xml");
 
-const frontendCoverage = readCoverage("coverage/coverage-summary.json");
-
+const frontendCoverage = readCoverage(
+  "frontend/coverage/coverage-summary.json",
+);
 const backendCoverage = readCoverage("backend/coverage/coverage-summary.json");
 
 const totalTests = frontendTests.tests + backendTests.tests;
-
 const totalFailures = frontendTests.failures + backendTests.failures;
 
 const totalCovered =
