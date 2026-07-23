@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { ProjectDto, UpdateProjectDto } from './dto/project.dto';
 import { UploadedFile, UseInterceptors } from '@nestjs/common';
@@ -51,8 +51,11 @@ export class ProjectController {
   }
 
   @Get()
-  findAll() {
-    return this.projectService.findAll();
+  findAll(
+    @Query('sortBy') sortBy: 'name' | 'createdAt' | 'updatedAt',
+    @Query('order') order: 'asc' | 'desc',
+  ) {
+    return this.projectService.findAll({ sortBy, order });
   }
 
   @Get(':id')

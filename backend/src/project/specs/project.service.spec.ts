@@ -56,10 +56,13 @@ describe('ProjectService', () => {
   });
 
   it('calls prisma.project.findMany()', async () => {
-    await service.findAll();
+    await service.findAll({ sortBy: 'name', order: 'asc' });
 
     expect(prismaMock.project.findMany).toHaveBeenCalledWith({
       where: { deletedAt: null },
+      orderBy: {
+        name: 'asc',
+      },
     });
   });
 

@@ -24,21 +24,25 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            backend/package-lock.json
+          cache-dependency-path: package-lock.json
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Build shared
+        working-directory: shared
+        run: npm run build
 
       #############################
       # Frontend
       #############################
 
-      - name: Install frontend dependencies
-        run: npm ci
-
       - name: Run frontend tests
+        working-directory: frontend
         run: npm run test:ci
 
       - name: Check frontend coverage
+        working-directory: frontend
         run: |
           ls -la
           ls -la coverage || true
@@ -46,10 +50,6 @@ jobs:
       #############################
       # Backend
       #############################
-
-      - name: Install backend dependencies
-        working-directory: backend
-        run: npm ci
 
       - name: Generate Prisma Client
         working-directory: backend
@@ -74,7 +74,7 @@ jobs:
         uses: dorny/test-reporter@v1
         with:
           name: Frontend Tests
-          path: test-results/frontend-tests.xml
+          path: frontend/test-results/frontend-tests.xml
           reporter: java-junit
           fail-on-error: true
           list-tests: all
@@ -95,7 +95,7 @@ jobs:
         with:
           name: junit-reports
           path: |
-            test-results/frontend-tests.xml
+            frontend/test-results/frontend-tests.xml
             backend/test-results/backend-tests.xml
 
       #############################
@@ -109,7 +109,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage/lcov.info
+          files: frontend/coverage/lcov.info
           flags: frontend
           name: frontend
           fail_ci_if_error: true
@@ -129,7 +129,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: frontend-coverage
-          path: coverage
+          path: frontend/coverage
 
       - name: Upload backend coverage artifact
         uses: actions/upload-artifact@v4
