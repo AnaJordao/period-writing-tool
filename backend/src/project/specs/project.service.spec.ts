@@ -38,10 +38,12 @@ describe('ProjectService', () => {
       name: 'My Project',
       description: 'Description',
       header: null,
+      isFavorite: false,
     };
     const dto2 = {
       name: 'My Project',
       description: 'Description',
+      isFavorite: false,
     };
 
     await service.create(dto);
@@ -56,7 +58,7 @@ describe('ProjectService', () => {
   });
 
   it('calls prisma.project.findMany()', async () => {
-    await service.findAll({ sortBy: 'name', order: 'asc' });
+    await service.findAll({ sortBy: 'name', order: 'asc' }, false);
 
     expect(prismaMock.project.findMany).toHaveBeenCalledWith({
       where: { deletedAt: null },
@@ -82,6 +84,7 @@ describe('ProjectService', () => {
       name: 'Updated Project',
       description: 'Updated Description',
       header: 'new-header.png',
+      isFavorite: false,
     };
 
     await service.update(id, dto);
@@ -97,6 +100,7 @@ describe('ProjectService', () => {
     const dto = {
       name: 'Updated Project',
       description: 'Updated Description',
+      isFavorite: false,
       removeHeader: true,
     };
 
@@ -108,6 +112,7 @@ describe('ProjectService', () => {
         name: 'Updated Project',
         description: 'Updated Description',
         header: null,
+        isFavorite: false,
       },
     });
   });
@@ -117,6 +122,7 @@ describe('ProjectService', () => {
     const dto = {
       name: 'Updated Project',
       description: 'Updated Description',
+      isFavorite: true,
       removeHeader: true,
     };
     const filename = 'new-header.png';
@@ -129,6 +135,7 @@ describe('ProjectService', () => {
         name: 'Updated Project',
         description: 'Updated Description',
         header: `/uploads/${filename}`,
+        isFavorite: true,
       },
     });
   });
@@ -141,6 +148,17 @@ describe('ProjectService', () => {
     expect(prismaMock.project.update).toHaveBeenCalledWith({
       where: { id },
       data: { deletedAt: expect.any(Date) },
+    });
+  });
+
+  it('calls prisma.project.get() with isOnlyFavoriteFilter correctly', async () => {
+    await service.findAll({ sortBy: 'name', order: 'asc' }, true);
+
+    expect(prismaMock.project.findMany).toHaveBeenCalledWith({
+      where: { deletedAt: null, isFavorite: true },
+      orderBy: {
+        name: 'asc',
+      },
     });
   });
 });

@@ -50,6 +50,7 @@ export function ProjectModal({
           name: projectRequest.name,
           description: projectRequest.description,
           header: projectRequest.header,
+          isFavorite: false,
         });
       }
 

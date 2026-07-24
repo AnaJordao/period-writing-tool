@@ -25,6 +25,7 @@ export async function createProject(data: ProjectRequest) {
 
 export async function updateProject(id: string, data: Partial<ProjectRequest>) {
   const formData = new FormData();
+  console.log('data: ', data);
 
   if (data.name) {
     formData.append('name', data.name);
@@ -42,6 +43,10 @@ export async function updateProject(id: string, data: Partial<ProjectRequest>) {
     formData.append('removeHeader', 'true');
   }
 
+  if (data.isFavorite !== undefined && data.isFavorite !== null) {
+    formData.append('isFavorite', data.isFavorite ? 'true' : 'false');
+  }
+
   const response = await api.patch<Project>(`/project/${id}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
@@ -50,11 +55,15 @@ export async function updateProject(id: string, data: Partial<ProjectRequest>) {
   return response.data;
 }
 
-export async function getProjects({ sortBy, order }: ProjectSorting) {
+export async function getProjects(
+  { sortBy, order }: ProjectSorting,
+  isOnlyFavoriteFilter: boolean,
+): Promise<Project[]> {
   const response = await api.get<Project[]>('/project', {
     params: {
       sortBy,
       order,
+      isOnlyFavoriteFilter,
     },
   });
   return response.data;

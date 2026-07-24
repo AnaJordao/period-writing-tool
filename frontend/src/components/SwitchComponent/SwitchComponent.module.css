@@ -1,0 +1,44 @@
+.root {
+  --switch-color: var(--accent);
+  --switch-track-label-padding: 2px;
+}
+
+.root,
+.body,
+.track,
+.thumb,
+.label {
+  cursor: pointer;
+}
+
+.body {
+  display: flex;
+  align-items: center;
+}
+
+.track {
+  width: 40px;
+  height: 24px;
+  overflow: visible;
+
+  &:checked {
+    background-color: var(--accent-lighter);
+  }
+
+}
+
+.thumb {
+  width: 20px;
+  height: 20px;
+  left: 2px;
+  border: 1px solid light-dark(var(--accent), var(--accent));
+  background-color: var(--accent-lighter);
+
+  transition: background-color 100ms ease, left 100ms ease;
+
+  input:checked + * > & {
+    background-color: var(--accent-lighter);
+    left: calc(100% - 22px);
+    border-color: light-dark(var(--accent-dark), var(--accent-dark));
+  }
+}

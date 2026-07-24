@@ -1,4 +1,4 @@
-import { IconHeart } from '@tabler/icons-react';
+import { IconHeart, IconHeartFilled } from '@tabler/icons-react';
 import { ActionIcon, Badge, Button, Card, Group, Image, Text } from '@mantine/core';
 import classes from './CardComponent.module.css';
 import { normalizeDate } from '@period-writing-tool/shared';
@@ -16,6 +16,8 @@ interface CardComponentProps {
   createdAt: string;
   menuItems: MenuItem[];
   search: string;
+  isFavorite: boolean;
+  handleFavoriteClick: () => void;
 }
 
 export function CardComponent({
@@ -26,6 +28,8 @@ export function CardComponent({
   createdAt,
   menuItems,
   search,
+  isFavorite,
+  handleFavoriteClick,
 }: CardComponentProps) {
   const tags = badges?.map((badge) => (
     <Badge variant="light" key={badge.label} leftSection={badge.emoji}>
@@ -35,46 +39,57 @@ export function CardComponent({
 
   return (
     <Card data-testid={'project-card'} withBorder radius="md" p="md" className={classes.card}>
-      <Card.Section className={classes.cover}>
-        <ThreeDotMenu menuItems={menuItems} />
-        {header ? (
-          <Image src={`${API_URL}${header}`} alt={name} height={180} />
-        ) : (
-          <Image src={placeholderImage} alt={name} height={180} />
-        )}
-      </Card.Section>
+      <div className={classes.content}>
+        <div className={classes.cover}>
+          <ThreeDotMenu menuItems={menuItems} />
+          {header ? (
+            <Image src={`${API_URL}${header}`} alt={name} height={180} />
+          ) : (
+            <Image src={placeholderImage} alt={name} height={180} />
+          )}
+        </div>
 
-      <Card.Section className={classes.section} mt="md">
-        <Group className={classes.firstSection}>
-          <Text className={classes.name} fz="h2" fw={500}>
-            <HighlightText text={name} highlight={search} />
-          </Text>
-          <Text className={classes.createdTime} c="dimmed" size="xs">
-            {normalizeDate(createdAt)}
-          </Text>
-        </Group>
-        <Text fz="sm" mt="xs">
-          <HighlightText text={description ?? ''} highlight={search} />
-        </Text>
-      </Card.Section>
-
-      {tags && (
-        <Card.Section className={classes.section}>
-          <Text mt="md" className={classes.label} c="dimmed">
-            Perfect for you, if you enjoy
-          </Text>
-          <Group gap={7} mt={5}>
-            {tags}
+        <Card.Section className={classes.section} mt="md">
+          <Group className={classes.firstSection}>
+            <Text className={classes.name} fz="h2" fw={500}>
+              <HighlightText text={name} highlight={search} />
+            </Text>
+            <Text className={classes.createdTime} c="dimmed" size="xs">
+              {normalizeDate(createdAt)}
+            </Text>
           </Group>
+          <Text fz="sm" mt="xs">
+            <HighlightText text={description ?? ''} highlight={search} />
+          </Text>
         </Card.Section>
-      )}
 
-      <Group mt="xs">
+        {tags && (
+          <Card.Section className={classes.section}>
+            <Text mt="md" className={classes.label} c="dimmed">
+              Perfect for you, if you enjoy
+            </Text>
+            <Group gap={7} mt={5}>
+              {tags}
+            </Group>
+          </Card.Section>
+        )}
+      </div>
+      <Group mt="xs" className={classes.buttonsSection}>
         <Button className="standard-btn" radius="md" style={{ flex: 1 }}>
           Show details
         </Button>
-        <ActionIcon variant="default" radius="md" size={36} aria-label="Like">
-          <IconHeart className={classes.like} stroke={1.5} />
+        <ActionIcon
+          onClick={handleFavoriteClick}
+          variant="default"
+          radius="md"
+          size={36}
+          aria-label="Like"
+        >
+          {isFavorite ? (
+            <IconHeartFilled className={classes.like} stroke={1.5} />
+          ) : (
+            <IconHeart className={classes.like} stroke={1.5} />
+          )}
         </ActionIcon>
       </Group>
     </Card>

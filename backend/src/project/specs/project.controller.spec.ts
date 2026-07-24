@@ -36,6 +36,7 @@ describe('ProjectController', () => {
     const dto = {
       name: 'My Project',
       description: 'Description',
+      isFavorite: false,
     };
 
     await controller.create(dto);
@@ -44,10 +45,10 @@ describe('ProjectController', () => {
   });
 
   it('calls service.findAll()', async () => {
-    await controller.findAll('name', 'asc');
+    await controller.findAll('name', 'asc', false);
 
     expect(serviceMock.findAll).toHaveBeenCalledTimes(1);
-    expect(serviceMock.findAll).toHaveBeenCalledWith({ sortBy: 'name', order: 'asc' });
+    expect(serviceMock.findAll).toHaveBeenCalledWith({ sortBy: 'name', order: 'asc' }, false);
   });
 
   it('calls service.findOne()', async () => {
@@ -64,6 +65,7 @@ describe('ProjectController', () => {
       name: 'Updated Project',
       description: 'Updated Description',
       header: 'new-header.png',
+      isFavorite: false,
     };
 
     await controller.update(id, dto);
