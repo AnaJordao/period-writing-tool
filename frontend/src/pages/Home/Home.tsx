@@ -1,7 +1,7 @@
 import { useDisclosure } from '@mantine/hooks';
 import { HeaderSearch } from '../../components/HeaderSearch/HeaderSearch';
 import { ProjectModal } from '../../components/ProjectModal/ProjectModal';
-import { getProjects } from '../../services/project.service';
+import { getProjects, updateProject } from '../../services/project.service';
 import { useEffect, useMemo, useState } from 'react';
 import type { Project, ProjectRequest, ProjectSorting } from '@period-writing-tool/shared';
 import { CardComponent } from '../../components/CardComponent/CardComponent';
@@ -10,6 +10,7 @@ import { errorNotification } from '../../services/notification.services';
 import { DeleteModal } from '../../components/DeleteModal/DeleteModal';
 import { IconEdit, IconTrash } from '@tabler/icons-react';
 import { GradientSegmentedControl } from '../../components/GradientSegmentedControl/GradientSegmentedControl';
+import { SwitchComponent } from '../../components/SwitchComponent/SwitchComponent';
 
 export default function Home() {
   const [search, setSearch] = useState('');
@@ -25,13 +26,14 @@ export default function Home() {
     removeHeader: false,
   });
   const [allProjects, setAllProjects] = useState<Project[]>([]);
+  const [isOnlyFavorites, setIsOnlyFavorites] = useState(false);
   const [isUpdateMode, setIsUpdateMode] = useState(false);
   const [projectSorting, setProjectSorting] = useState<ProjectSorting>({
     sortBy: 'updatedAt',
     order: 'desc',
   });
 
-  const filteredProjects = useMemo(() => {
+  const filteredProjects: Project[] = useMemo(() => {
     const query = search.trim().toLowerCase();
 
     if (!query) {
@@ -42,9 +44,12 @@ export default function Home() {
       const name = project.name.toLowerCase();
       const description = (project.description ?? '').toLowerCase();
 
-      return name.includes(query) || description.includes(query);
+      return (
+        (name.includes(query) || description.includes(query)) &&
+        (isOnlyFavorites ? project.isFavorite : true)
+      );
     });
-  }, [allProjects, search]);
+  }, [allProjects, search, isOnlyFavorites]);
 
   const sortByOptions = [
     { value: 'name', label: 'Name' },
@@ -101,7 +106,7 @@ export default function Home() {
 
   async function fetchProjects() {
     try {
-      const projects = await getProjects(projectSorting);
+      const projects = await getProjects(projectSorting, isOnlyFavorites);
       setAllProjects(projects);
     } catch (error) {
       errorNotification(
@@ -111,9 +116,17 @@ export default function Home() {
       console.error(error);
     }
   }
+  async function handleFavoriteClick(project: Project) {
+    await updateProject(project.id, {
+      name: project.name,
+      isFavorite: !project.isFavorite,
+    });
+
+    void fetchProjects();
+  }
   useEffect(() => {
     void fetchProjects();
-  }, [projectSorting]);
+  }, [projectSorting, isOnlyFavorites]);
 
   return (
     <>
@@ -143,14 +156,24 @@ export default function Home() {
             });
           }}
         />
+
+        <SwitchComponent
+          label="Only favorites:"
+          onChange={() => {
+            setIsOnlyFavorites(!isOnlyFavorites);
+          }}
+        />
       </Group>
 
       <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
-        {filteredProjects.map((project) => (
+        {filteredProjects.map((project: Project) => (
           <CardComponent
             key={project.id}
             {...project}
             search={search}
+            handleFavoriteClick={() => {
+              void handleFavoriteClick(project);
+            }}
             menuItems={[
               {
                 menuItemLabel: 'Edit project',

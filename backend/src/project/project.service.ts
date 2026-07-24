@@ -17,9 +17,9 @@ export class ProjectService {
     });
   }
 
-  findAll({ sortBy, order }: ProjectSorting) {
+  findAll({ sortBy, order }: ProjectSorting, isOnlyFavoriteFilter: boolean) {
     return this.prisma.project.findMany({
-      where: { deletedAt: null },
+      where: { deletedAt: null, isFavorite: isOnlyFavoriteFilter ? true : undefined },
       orderBy: {
         [sortBy]: order,
       },

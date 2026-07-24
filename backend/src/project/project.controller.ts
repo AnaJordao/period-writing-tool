@@ -54,8 +54,9 @@ export class ProjectController {
   findAll(
     @Query('sortBy') sortBy: 'name' | 'createdAt' | 'updatedAt',
     @Query('order') order: 'asc' | 'desc',
+    @Query('isOnlyFavoriteFilter') isOnlyFavoriteFilter: boolean,
   ) {
-    return this.projectService.findAll({ sortBy, order });
+    return this.projectService.findAll({ sortBy, order }, isOnlyFavoriteFilter);
   }
 
   @Get(':id')

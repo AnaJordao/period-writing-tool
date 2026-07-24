@@ -36,6 +36,7 @@ describe('ProjectModal', () => {
       name: 'My project',
       description: 'My project description',
       header: null,
+      isFavorite: false,
     },
     onClose: vi.fn(),
     onDelete: vi.fn(),
@@ -107,6 +108,7 @@ describe('ProjectModal', () => {
         name: props.projectRequest.name,
         description: props.projectRequest.description,
         header: props.projectRequest.header,
+        isFavorite: false,
       });
 
       expect(props.onSave).toHaveBeenCalled();

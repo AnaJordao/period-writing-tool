@@ -8,6 +8,10 @@ export class ProjectDto {
   @IsString()
   description?: string;
 
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  isFavorite: boolean = false;
+
   // header is handled separeted
 }
 
