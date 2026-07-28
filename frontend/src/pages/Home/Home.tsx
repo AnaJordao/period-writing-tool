@@ -1,14 +1,14 @@
 import { useDisclosure } from '@mantine/hooks';
 import { HeaderSearch } from '../../components/HeaderSearch/HeaderSearch';
 import { ProjectModal } from '../../components/ProjectModal/ProjectModal';
-import { getProjects, updateProject } from '../../services/project.service';
+import { getProjects, restoreProject, updateProject } from '../../services/project.service';
 import { useEffect, useMemo, useState } from 'react';
 import type { Project, ProjectRequest, ProjectSorting } from '@period-writing-tool/shared';
 import { CardComponent } from '../../components/CardComponent/CardComponent';
 import { Group, SimpleGrid } from '@mantine/core';
 import { errorNotification } from '../../services/notification.services';
 import { DeleteModal } from '../../components/DeleteModal/DeleteModal';
-import { IconEdit, IconTrash } from '@tabler/icons-react';
+import { IconEdit, IconHeart, IconTrash } from '@tabler/icons-react';
 import { GradientSegmentedControl } from '../../components/GradientSegmentedControl/GradientSegmentedControl';
 import { SwitchComponent } from '../../components/SwitchComponent/SwitchComponent';
 
@@ -18,6 +18,7 @@ export default function Home() {
     useDisclosure(false);
   const [openedDeleteModal, { open: openDeleteModal, close: closeDeleteModal }] =
     useDisclosure(false);
+  const [isPermanentDelete, setIsPermanentDelete] = useState(false);
   const [projectRequest, setProjectRequest] = useState<ProjectRequest>({
     name: '',
     description: '',
@@ -27,6 +28,7 @@ export default function Home() {
   });
   const [allProjects, setAllProjects] = useState<Project[]>([]);
   const [isOnlyFavorites, setIsOnlyFavorites] = useState(false);
+  const [isOnlyDeleted, setIsOnlyDeleted] = useState(false);
   const [isUpdateMode, setIsUpdateMode] = useState(false);
   const [projectSorting, setProjectSorting] = useState<ProjectSorting>({
     sortBy: 'updatedAt',
@@ -46,10 +48,11 @@ export default function Home() {
 
       return (
         (name.includes(query) || description.includes(query)) &&
-        (isOnlyFavorites ? project.isFavorite : true)
+        (isOnlyFavorites ? project.isFavorite : true) &&
+        (isOnlyDeleted ? project.deletedAt !== null : true)
       );
     });
-  }, [allProjects, search, isOnlyFavorites]);
+  }, [allProjects, search, isOnlyFavorites, isOnlyDeleted]);
 
   const sortByOptions = [
     { value: 'name', label: 'Name' },
@@ -92,7 +95,7 @@ export default function Home() {
     openProjectModal();
   }
 
-  function openDeleteProjectModal(projectId: string) {
+  function openDeleteProjectModal(projectId: string, isPermanentDelete = false) {
     setProjectRequest({
       id: projectId,
       name: '',
@@ -101,12 +104,13 @@ export default function Home() {
       currentHeader: null,
       removeHeader: false,
     });
+    setIsPermanentDelete(isPermanentDelete);
     openDeleteModal();
   }
 
   async function fetchProjects() {
     try {
-      const projects = await getProjects(projectSorting, isOnlyFavorites);
+      const projects = await getProjects(projectSorting, isOnlyFavorites, isOnlyDeleted);
       setAllProjects(projects);
     } catch (error) {
       errorNotification(
@@ -116,6 +120,7 @@ export default function Home() {
       console.error(error);
     }
   }
+
   async function handleFavoriteClick(project: Project) {
     await updateProject(project.id, {
       name: project.name,
@@ -124,9 +129,15 @@ export default function Home() {
 
     void fetchProjects();
   }
+
+  async function handleRestoreClick(project: Project) {
+    await restoreProject(project.id);
+    void fetchProjects();
+  }
+
   useEffect(() => {
     void fetchProjects();
-  }, [projectSorting, isOnlyFavorites]);
+  }, [projectSorting, isOnlyFavorites, isOnlyDeleted]);
 
   return (
     <>
@@ -158,44 +169,88 @@ export default function Home() {
         />
 
         <SwitchComponent
-          label="Only favorites:"
+          label={<IconHeart size={22} stroke={1.5} style={{ color: 'var(--accent)' }} />}
           onChange={() => {
             setIsOnlyFavorites(!isOnlyFavorites);
+          }}
+        />
+
+        <SwitchComponent
+          label={<IconTrash size={22} stroke={1.5} style={{ color: 'var(--accent)' }} />}
+          onChange={() => {
+            setIsOnlyDeleted(!isOnlyDeleted);
           }}
         />
       </Group>
 
       <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
-        {filteredProjects.map((project: Project) => (
-          <CardComponent
-            key={project.id}
-            {...project}
-            search={search}
-            handleFavoriteClick={() => {
-              void handleFavoriteClick(project);
-            }}
-            menuItems={[
-              {
-                menuItemLabel: 'Edit project',
-                menuItemLabelColor: 'var(--accent)',
-                onClick: () => {
-                  openEditModal(project);
-                },
-                hasDivider: false,
-                icon: <IconEdit size={16} stroke={1.5} style={{ color: 'var(--accent)' }} />,
-              },
-              {
-                menuItemLabel: 'Delete project',
-                menuItemLabelColor: 'var(--error-bg)',
-                onClick: () => {
-                  openDeleteProjectModal(project.id);
-                },
-                hasDivider: false,
-                icon: <IconTrash size={16} stroke={1.5} style={{ color: 'var(--error-bg)' }} />,
-              },
-            ]}
-          />
-        ))}
+        {filteredProjects.map((project: Project) => {
+          const badges = [];
+          if (project.isFavorite) {
+            badges.push({ emoji: '❤️', label: 'Favorite' });
+          }
+          if (project.deletedAt !== null) {
+            badges.push({ emoji: '🗑️', label: 'Deleted' });
+          }
+          return (
+            <CardComponent
+              key={project.id}
+              {...project}
+              isDeleted={project.deletedAt !== null}
+              search={search}
+              handleFavoriteClick={() => {
+                void handleFavoriteClick(project);
+              }}
+              handleRestoreClick={() => {
+                void handleRestoreClick(project);
+              }}
+              handleEditClick={() => {
+                openEditModal(project);
+              }}
+              badges={badges}
+              menuItems={
+                project.deletedAt !== null
+                  ? [
+                      {
+                        menuItemLabel: 'Delete permanently',
+                        menuItemLabelColor: 'var(--error-bg)',
+                        onClick: () => {
+                          openDeleteProjectModal(project.id, true);
+                        },
+                        hasDivider: false,
+                        icon: (
+                          <IconTrash size={16} stroke={1.5} style={{ color: 'var(--error-bg)' }} />
+                        ),
+                      },
+                    ]
+                  : [
+                      {
+                        menuItemLabel: 'Edit project',
+                        menuItemLabelColor: 'var(--accent)',
+                        onClick: () => {
+                          openEditModal(project);
+                        },
+                        hasDivider: false,
+                        icon: (
+                          <IconEdit size={16} stroke={1.5} style={{ color: 'var(--accent)' }} />
+                        ),
+                      },
+                      {
+                        menuItemLabel: 'Delete project',
+                        menuItemLabelColor: 'var(--error-bg)',
+                        onClick: () => {
+                          openDeleteProjectModal(project.id);
+                        },
+                        hasDivider: false,
+                        icon: (
+                          <IconTrash size={16} stroke={1.5} style={{ color: 'var(--error-bg)' }} />
+                        ),
+                      },
+                    ]
+              }
+            />
+          );
+        })}
       </SimpleGrid>
 
       <ProjectModal
@@ -213,6 +268,7 @@ export default function Home() {
       <DeleteModal
         opened={openedDeleteModal}
         projectRequest={projectRequest}
+        isPermanentDelete={isPermanentDelete}
         onClose={closeDeleteModal}
         onDelete={() => {
           void fetchProjects();

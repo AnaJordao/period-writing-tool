@@ -2,7 +2,7 @@ import { Group, Switch } from '@mantine/core';
 import classes from './SwitchComponent.module.css';
 
 interface SwitchComponentProps {
-  label: string;
+  label: React.ReactNode | string;
   onChange: () => void;
 }
 

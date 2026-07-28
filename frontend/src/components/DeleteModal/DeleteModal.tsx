@@ -1,6 +1,6 @@
 import { Modal, Button, Group, Text } from '@mantine/core';
 import classes from './DeleteModal.module.css';
-import { deleteProject } from '../../services/project.service';
+import { deleteProject, deleteProjectPermanently } from '../../services/project.service';
 import type { ProjectRequest } from '@period-writing-tool/shared';
 import { errorNotification, successNotification } from '../../services/notification.services';
 
@@ -9,15 +9,27 @@ interface DeleteModalProps {
   projectRequest: ProjectRequest;
   onClose: () => void;
   onDelete: () => void;
+  isPermanentDelete: boolean;
 }
 
-export function DeleteModal({ opened, projectRequest, onClose, onDelete }: DeleteModalProps) {
+export function DeleteModal({
+  opened,
+  projectRequest,
+  isPermanentDelete,
+  onClose,
+  onDelete,
+}: DeleteModalProps) {
   async function handleDelete() {
     try {
       if (!projectRequest.id) {
         throw new Error('Project ID is required for deletion.');
       }
-      await deleteProject(projectRequest.id);
+
+      if (isPermanentDelete) {
+        await deleteProjectPermanently(projectRequest.id);
+      } else {
+        await deleteProject(projectRequest.id);
+      }
 
       onDelete();
 
@@ -45,8 +57,9 @@ export function DeleteModal({ opened, projectRequest, onClose, onDelete }: Delet
       }}
     >
       <Text className={classes.text}>
-        This project will be deleted, but it can be recovered in the deleted projects section. Are
-        you sure you want to proceed with the deletion?
+        {isPermanentDelete
+          ? 'This project will be permanently deleted and cannot be recovered.'
+          : 'This project will be deleted, but it can be recovered in the deleted projects section. Are you sure you want to proceed with the deletion?'}
       </Text>
 
       <Group justify="flex-end" mt="xl">
@@ -66,7 +79,7 @@ export function DeleteModal({ opened, projectRequest, onClose, onDelete }: Delet
           }}
           aria-label="Confirm deletion"
         >
-          Delete
+          {isPermanentDelete ? 'Permanently Delete' : 'Delete'}
         </Button>
       </Group>
     </Modal>

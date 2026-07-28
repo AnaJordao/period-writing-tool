@@ -55,8 +55,13 @@ export class ProjectController {
     @Query('sortBy') sortBy: 'name' | 'createdAt' | 'updatedAt',
     @Query('order') order: 'asc' | 'desc',
     @Query('isOnlyFavoriteFilter') isOnlyFavoriteFilter: boolean,
+    @Query('isOnlyDeletedFilter') isOnlyDeletedFilter: boolean,
   ) {
-    return this.projectService.findAll({ sortBy, order }, isOnlyFavoriteFilter);
+    return this.projectService.findAll(
+      { sortBy, order },
+      isOnlyFavoriteFilter,
+      isOnlyDeletedFilter,
+    );
   }
 
   @Get(':id')
@@ -67,5 +72,15 @@ export class ProjectController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.projectService.remove(id);
+  }
+
+  @Delete(':id/permanent')
+  removePermanently(@Param('id') id: string) {
+    return this.projectService.removePermanently(id);
+  }
+
+  @Patch(':id/restore')
+  restore(@Param('id') id: string) {
+    return this.projectService.restore(id);
   }
 }

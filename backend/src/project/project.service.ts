@@ -17,9 +17,16 @@ export class ProjectService {
     });
   }
 
-  findAll({ sortBy, order }: ProjectSorting, isOnlyFavoriteFilter: boolean) {
+  findAll(
+    { sortBy, order }: ProjectSorting,
+    isOnlyFavoriteFilter: boolean,
+    isOnlyDeletedFilter: boolean,
+  ): Promise<Project[]> {
     return this.prisma.project.findMany({
-      where: { deletedAt: null, isFavorite: isOnlyFavoriteFilter ? true : undefined },
+      where: {
+        deletedAt: isOnlyDeletedFilter ? { not: null } : null,
+        isFavorite: isOnlyFavoriteFilter ? true : undefined,
+      },
       orderBy: {
         [sortBy]: order,
       },
@@ -54,6 +61,19 @@ export class ProjectService {
     return this.prisma.project.update({
       where: { id },
       data: { deletedAt: new Date() },
+    });
+  }
+
+  removePermanently(id: string) {
+    return this.prisma.project.delete({
+      where: { id },
+    });
+  }
+
+  restore(id: string) {
+    return this.prisma.project.update({
+      where: { id },
+      data: { deletedAt: null },
     });
   }
 }
