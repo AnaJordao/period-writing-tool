@@ -99,3 +99,18 @@
   }
 }
 
+.deleted-btn {
+  background-color: var(--mantine-color-gray-6);
+  color: #fff;
+  border: 1px solid var(--mantine-color-gray-6);
+  padding: 8px 16px;
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 135%;
+  cursor: not-allowed;
+  transition: all 0.2s ease-in-out;
+  &:hover {
+    color: #fff;
+  }
+}
+

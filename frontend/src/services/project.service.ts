@@ -43,7 +43,7 @@ export async function updateProject(id: string, data: Partial<ProjectRequest>) {
     formData.append('removeHeader', 'true');
   }
 
-  if (data.isFavorite !== undefined && data.isFavorite !== null) {
+  if (data.isFavorite !== undefined) {
     formData.append('isFavorite', data.isFavorite ? 'true' : 'false');
   }
 
@@ -58,12 +58,14 @@ export async function updateProject(id: string, data: Partial<ProjectRequest>) {
 export async function getProjects(
   { sortBy, order }: ProjectSorting,
   isOnlyFavoriteFilter: boolean,
+  isOnlyDeletedFilter: boolean,
 ): Promise<Project[]> {
   const response = await api.get<Project[]>('/project', {
     params: {
       sortBy,
       order,
       isOnlyFavoriteFilter,
+      isOnlyDeletedFilter,
     },
   });
   return response.data;
@@ -76,4 +78,13 @@ export async function getProjectById(id: string) {
 
 export async function deleteProject(id: string) {
   await api.delete<Project>(`/project/${id}`);
+}
+
+export async function deleteProjectPermanently(id: string) {
+  await api.delete<Project>(`/project/${id}/permanent`);
+}
+
+export async function restoreProject(id: string) {
+  const response = await api.patch<Project>(`/project/${id}/restore`);
+  return response.data;
 }

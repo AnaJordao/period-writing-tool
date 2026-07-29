@@ -12,7 +12,7 @@ export interface MenuItem {
   icon: React.ReactNode;
 }
 
-interface ThreeDotMenuComponentProps {
+export interface ThreeDotMenuComponentProps {
   menuItems: MenuItem[];
 }
 
@@ -29,7 +29,7 @@ export function ThreeDotMenu({ menuItems }: ThreeDotMenuComponentProps) {
         <Menu.Target>
           <ActionIcon
             variant="default"
-            style={{ color: 'var(--accent)' }}
+            className={classes.actionIcon}
             aria-label="Open three-dot menu"
           >
             <IconDots size={20} stroke={1.5} />

@@ -44,7 +44,7 @@ describe('ThreeDotMenu', () => {
 
     await user.click(screen.getByRole('button', { name: 'Open three-dot menu' }));
 
-    expect(await screen.findByRole('menuitem', { name: 'Edit project' })).toBeInTheDocument();
+    expect(await screen.findByText('Edit project')).toBeInTheDocument();
   });
 
   it('renders menu labels', async () => {

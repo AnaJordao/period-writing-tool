@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/require-await */
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 import { render } from '../../tests/render';
 import { getProjects } from '../../services/project.service';
@@ -7,9 +7,17 @@ import userEvent from '@testing-library/user-event';
 import { errorNotification } from '../../services/notification.services';
 import type { Project } from '@period-writing-tool/shared';
 import Home from './Home';
+import type { CardComponentProps } from '../../components/CardComponent/CardComponent';
+import {
+  ThreeDotMenu,
+  type ThreeDotMenuComponentProps,
+} from '../../components/ThreeDotMenu/ThreeDotMenu';
+import { useState } from 'react';
 
 vi.mock('../../services/project.service', () => ({
   getProjects: vi.fn(),
+  restoreProject: vi.fn(),
+  updateProject: vi.fn(),
 }));
 
 vi.mock('../../services/notification.services', () => ({
@@ -39,13 +47,108 @@ vi.mock('../../components/HeaderSearch/HeaderSearch', () => ({
   ),
 }));
 
+vi.mock('../../components/GradientSegmentedControl/GradientSegmentedControl', () => ({
+  GradientSegmentedControl: ({
+    label,
+    data,
+    value,
+    onChange,
+  }: {
+    label: string;
+    data: { value: string; label: string }[];
+    value: string;
+    onChange: (value: string) => void;
+  }) => (
+    <fieldset>
+      <legend>{label}</legend>
+
+      {data.map((item) => (
+        <label key={item.value}>
+          <input
+            type="radio"
+            name={label}
+            checked={value === item.value}
+            onChange={() => {
+              onChange(item.value);
+            }}
+          />
+          {item.label}
+        </label>
+      ))}
+    </fieldset>
+  ),
+}));
+
+vi.mock('../../components/SwitchComponent/SwitchComponent', () => ({
+  SwitchComponent: ({ ariaLabel, onChange }: { ariaLabel: string; onChange: () => void }) => (
+    <input type="checkbox" role="switch" aria-label={ariaLabel} onChange={onChange} />
+  ),
+}));
+
+vi.mock('../../components/ThreeDotMenu/ThreeDotMenu', () => ({
+  ThreeDotMenu: ({ menuItems }: ThreeDotMenuComponentProps) => {
+    const [open, setOpen] = useState(false);
+    return (
+      <div>
+        <button
+          aria-label="Open three-dot menu"
+          onClick={() => {
+            setOpen((o) => !o);
+          }}
+        >
+          Open three-dot menu
+        </button>
+        {open && (
+          <div role="menu">
+            {menuItems.map((item, i) => (
+              <button key={i} role="menuitem" onClick={item.onClick}>
+                {item.menuItemLabel}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  },
+}));
+
 vi.mock('../../components/CardComponent/CardComponent', () => ({
-  CardComponent: ({ name, menuItems }: { name: string; menuItems: { onClick: () => void }[] }) => (
+  CardComponent: ({
+    name,
+    isFavorite,
+    isDeleted,
+    menuItems,
+    handleEditClick,
+    handleFavoriteClick,
+    handleRestoreClick,
+  }: CardComponentProps) => (
     <div data-testid="project-card">
       <span>{name}</span>
 
-      <button onClick={menuItems[0].onClick}>Edit</button>
-      <button onClick={menuItems[1].onClick}>Delete</button>
+      {!isDeleted && (
+        <>
+          <button aria-label="Show details" onClick={vi.fn()}>
+            Show details
+          </button>
+          <button aria-label="Edit project" onClick={handleEditClick}>
+            Edit project
+          </button>
+
+          <button
+            aria-label={isFavorite ? 'Unfavorite project' : 'Favorite project'}
+            onClick={handleFavoriteClick}
+          >
+            {isFavorite ? 'Unfavorite project' : 'Favorite project'}
+          </button>
+        </>
+      )}
+
+      {isDeleted && (
+        <button aria-label="Restore project" onClick={handleRestoreClick}>
+          Restore project
+        </button>
+      )}
+      <ThreeDotMenu menuItems={menuItems} />
     </div>
   ),
 }));
@@ -60,6 +163,10 @@ vi.mock('../../components/DeleteModal/DeleteModal', () => ({
 }));
 
 describe('Home', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   const projects: Project[] = [
     {
       id: '1',
@@ -72,7 +179,7 @@ describe('Home', () => {
     },
     {
       id: '2',
-      name: 'React App',
+      name: 'Project 2',
       description: 'Second project',
       header: undefined,
       isFavorite: true,
@@ -87,9 +194,22 @@ describe('Home', () => {
     render(<Home />);
 
     expect(await screen.findByText('Project One')).toBeInTheDocument();
-    expect(screen.getByText('React App')).toBeInTheDocument();
+    expect(await screen.findByText('Project 2')).toBeInTheDocument();
 
     expect(getProjects).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders sort options and filters switches', async () => {
+    vi.mocked(getProjects).mockResolvedValue(projects);
+
+    render(<Home />);
+
+    expect(await screen.findByRole('radio', { name: /Name/i })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: /Date of modification/i })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: /Ascending/i })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: /Descending/i })).toBeInTheDocument();
+    expect(screen.getByRole('switch', { name: /Only favorite projects/i })).toBeInTheDocument();
+    expect(screen.getByRole('switch', { name: /Only deleted projects/i })).toBeInTheDocument();
   });
 
   it('filters projects by search', async () => {
@@ -101,10 +221,10 @@ describe('Home', () => {
 
     await screen.findByText('Project One');
 
-    await user.type(screen.getByLabelText('Search'), 'react');
+    await user.type(screen.getByLabelText('Search'), '2');
 
     expect(screen.queryByText('Project One')).not.toBeInTheDocument();
-    expect(screen.getByText('React App')).toBeInTheDocument();
+    expect(await screen.findByText('Project 2')).toBeInTheDocument();
   });
 
   it('opens create modal', async () => {
@@ -128,23 +248,9 @@ describe('Home', () => {
 
     await screen.findByText('Project One');
 
-    await user.click(screen.getAllByText('Edit')[0]);
+    await user.click(screen.getAllByText('Edit project')[0]);
 
     expect(await screen.findByText('Update Project')).toBeInTheDocument();
-  });
-
-  it('opens delete modal', async () => {
-    const user = userEvent.setup();
-
-    vi.mocked(getProjects).mockResolvedValue(projects);
-
-    render(<Home />);
-
-    await screen.findByText('Project One');
-
-    await user.click(screen.getAllByText('Delete')[0]);
-
-    expect(await screen.findByText('Delete Project')).toBeInTheDocument();
   });
 
   it('shows notification when fetching fails', async () => {
@@ -227,6 +333,7 @@ describe('Home', () => {
           order: 'desc',
         },
         false,
+        false,
       );
     });
 
@@ -249,6 +356,7 @@ describe('Home', () => {
           order: 'asc',
         },
         false,
+        false,
       );
     });
 
@@ -259,11 +367,16 @@ describe('Home', () => {
     expect(names2[1]).toContain('Project B');
   });
 
-  it('renders projects sorted by the API with only favorites', async () => {
+  it('renders projects sorted by the API with only favorites and only deleted projects', async () => {
     const user = userEvent.setup();
 
-    vi.mocked(getProjects).mockImplementation(async (sorting, isOnlyFavorites) => {
-      if (sorting.sortBy === 'name' && sorting.order === 'asc' && !isOnlyFavorites) {
+    vi.mocked(getProjects).mockImplementation(async (sorting, isOnlyFavorites, isOnlyDeleted) => {
+      if (
+        sorting.sortBy === 'name' &&
+        sorting.order === 'asc' &&
+        !isOnlyFavorites &&
+        !isOnlyDeleted
+      ) {
         return [
           {
             id: '1',
@@ -284,13 +397,19 @@ describe('Home', () => {
             isFavorite: true,
           },
         ];
-      } else if (sorting.sortBy === 'updatedAt' && sorting.order === 'desc' && !isOnlyFavorites) {
+      } else if (
+        sorting.sortBy === 'updatedAt' &&
+        sorting.order === 'desc' &&
+        !isOnlyFavorites &&
+        !isOnlyDeleted
+      ) {
         return [
           {
             id: '2',
             name: 'Project B',
             updatedAt: '2025-03-01T00:00:00Z',
             createdAt: '2025-01-01T00:00:00Z',
+            deletedAt: null,
             description: '',
             header: undefined,
             isFavorite: true,
@@ -300,11 +419,14 @@ describe('Home', () => {
             name: 'Project A',
             updatedAt: '2025-01-01T00:00:00Z',
             createdAt: '2025-01-01T00:00:00Z',
+            deletedAt: null,
             description: '',
             header: undefined,
             isFavorite: false,
           },
         ];
+      } else if (isOnlyDeleted) {
+        return [];
       } else {
         return [
           {
@@ -312,6 +434,7 @@ describe('Home', () => {
             name: 'Project B',
             updatedAt: '2025-03-01T00:00:00Z',
             createdAt: '2025-01-01T00:00:00Z',
+            deletedAt: null,
             description: '',
             header: undefined,
             isFavorite: true,
@@ -343,6 +466,7 @@ describe('Home', () => {
           order: 'desc',
         },
         false,
+        false,
       );
     });
 
@@ -359,7 +483,7 @@ describe('Home', () => {
     // Click Name
     await user.click(screen.getByRole('radio', { name: /Name/i }));
     await user.click(screen.getByRole('radio', { name: /Ascending/i }));
-    await user.click(screen.getByRole('switch', { name: /Only favorites/i }));
+    await user.click(screen.getByRole('switch', { name: /Only favorite projects/i }));
 
     // Verify service was called with the correct sorting
     await waitFor(() => {
@@ -370,6 +494,7 @@ describe('Home', () => {
           order: 'asc',
         },
         true,
+        false,
       );
     });
 
@@ -385,7 +510,7 @@ describe('Home', () => {
     // Click Name
     await user.click(screen.getByRole('radio', { name: /Name/i }));
     await user.click(screen.getByRole('radio', { name: /Ascending/i }));
-    await user.click(screen.getByRole('switch', { name: /Only favorites/i }));
+    await user.click(screen.getByRole('switch', { name: /Only favorite projects/i }));
 
     // Verify service was called with the correct sorting
     await waitFor(() => {
@@ -396,6 +521,7 @@ describe('Home', () => {
           order: 'asc',
         },
         false,
+        false,
       );
     });
 
@@ -404,5 +530,93 @@ describe('Home', () => {
 
     expect(names3[0]).toContain('Project A');
     expect(names3[1]).toContain('Project B');
+
+    /////////////////////////////////////
+    ///// CENARY 4 - Only Deleted
+    ////////////////////////////////////
+
+    await user.click(screen.getByRole('switch', { name: /Only deleted/i }));
+
+    // Verify service was called with the correct sorting
+    await waitFor(() => {
+      expect(getProjects).toHaveBeenCalled();
+      expect(getProjects).toHaveBeenLastCalledWith(
+        {
+          sortBy: 'name',
+          order: 'asc',
+        },
+        false,
+        true,
+      );
+    });
+
+    expect(screen.queryByText('Project A')).not.toBeInTheDocument();
+    expect(screen.queryByText('Project B')).not.toBeInTheDocument();
+  });
+
+  it('renders no projects when the API returns an empty array', async () => {
+    vi.mocked(getProjects).mockResolvedValue([]);
+
+    render(<Home />);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('project-card')).not.toBeInTheDocument();
+    });
+  });
+
+  it('renders projects sorted by the API with only deleted projects', async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(getProjects).mockImplementation(async (sorting, isOnlyFavorites, isOnlyDeleted) => {
+      if (
+        sorting.sortBy === 'name' &&
+        sorting.order === 'asc' &&
+        !isOnlyFavorites &&
+        isOnlyDeleted
+      ) {
+        return [
+          {
+            id: '1',
+            name: 'Project A',
+            updatedAt: '2025-01-01T00:00:00Z',
+            createdAt: '2025-01-01T00:00:00Z',
+            deletedAt: '2025-01-01T00:00:00Z',
+            description: '',
+            header: undefined,
+            isFavorite: false,
+          },
+        ];
+      }
+      return [
+        {
+          id: '1',
+          name: 'Project A',
+          updatedAt: '2025-01-01T00:00:00Z',
+          createdAt: '2025-01-01T00:00:00Z',
+          deletedAt: null,
+          description: '',
+          header: undefined,
+          isFavorite: false,
+        },
+      ];
+    });
+
+    render(<Home />);
+
+    // Click Only Deleted
+    await user.click(screen.getByRole('switch', { name: /Only deleted/i }));
+
+    // Verify service was called with the correct parameters
+    await waitFor(() => {
+      expect(getProjects).toHaveBeenCalled();
+      expect(getProjects).toHaveBeenLastCalledWith(
+        {
+          sortBy: 'updatedAt',
+          order: 'desc',
+        },
+        false,
+        true,
+      );
+    });
   });
 });

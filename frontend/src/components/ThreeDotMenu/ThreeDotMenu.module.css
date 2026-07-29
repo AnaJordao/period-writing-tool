@@ -4,3 +4,9 @@
   right: 8px;
   z-index: 10;
 }
+
+.actionIcon {
+  color: var(--accent);
+  cursor: pointer;
+  
+}

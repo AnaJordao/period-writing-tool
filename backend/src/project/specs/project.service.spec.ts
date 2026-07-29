@@ -12,6 +12,7 @@ describe('ProjectService', () => {
       findMany: jest.fn(),
       findUnique: jest.fn(),
       update: jest.fn(),
+      delete: jest.fn(),
     },
   };
 
@@ -58,10 +59,10 @@ describe('ProjectService', () => {
   });
 
   it('calls prisma.project.findMany()', async () => {
-    await service.findAll({ sortBy: 'name', order: 'asc' }, false);
+    await service.findAll({ sortBy: 'name', order: 'asc' }, false, false);
 
     expect(prismaMock.project.findMany).toHaveBeenCalledWith({
-      where: { deletedAt: null },
+      where: { deletedAt: null, isFavorite: undefined },
       orderBy: {
         name: 'asc',
       },
@@ -152,13 +153,56 @@ describe('ProjectService', () => {
   });
 
   it('calls prisma.project.get() with isOnlyFavoriteFilter correctly', async () => {
-    await service.findAll({ sortBy: 'name', order: 'asc' }, true);
+    await service.findAll({ sortBy: 'name', order: 'asc' }, true, false);
 
     expect(prismaMock.project.findMany).toHaveBeenCalledWith({
       where: { deletedAt: null, isFavorite: true },
       orderBy: {
         name: 'asc',
       },
+    });
+  });
+
+  it('calls prisma.project.get() with isOnlyDeletedFilter correctly', async () => {
+    await service.findAll({ sortBy: 'name', order: 'asc' }, false, true);
+
+    expect(prismaMock.project.findMany).toHaveBeenCalledWith({
+      where: { deletedAt: { not: null }, isFavorite: undefined },
+      orderBy: {
+        name: 'asc',
+      },
+    });
+  });
+
+  it('calls prisma.project.get() with isOnlyFavoriteFilter and isOnlyDeletedFilter correctly', async () => {
+    await service.findAll({ sortBy: 'name', order: 'asc' }, true, true);
+
+    expect(prismaMock.project.findMany).toHaveBeenCalledWith({
+      where: { deletedAt: { not: null }, isFavorite: true },
+      orderBy: {
+        name: 'asc',
+      },
+    });
+  });
+
+  it('calls prisma.project.delete() for removePermanently()', async () => {
+    const id = '1';
+
+    await service.removePermanently(id);
+
+    expect(prismaMock.project.delete).toHaveBeenCalledWith({
+      where: { id },
+    });
+  });
+
+  it('calls prisma.project.update() for restore()', async () => {
+    const id = '1';
+
+    await service.restore(id);
+
+    expect(prismaMock.project.update).toHaveBeenCalledWith({
+      where: { id },
+      data: { deletedAt: null },
     });
   });
 });
