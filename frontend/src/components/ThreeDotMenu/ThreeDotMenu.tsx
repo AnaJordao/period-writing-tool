@@ -12,7 +12,7 @@ export interface MenuItem {
   icon: React.ReactNode;
 }
 
-interface ThreeDotMenuComponentProps {
+export interface ThreeDotMenuComponentProps {
   menuItems: MenuItem[];
 }
 

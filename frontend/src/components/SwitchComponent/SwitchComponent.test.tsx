@@ -6,7 +6,7 @@ import userEvent from '@testing-library/user-event';
 
 describe('SwitchComponent', () => {
   it('renders correctly', () => {
-    render(<SwitchComponent label="Test Switch" onChange={vi.fn()} />);
+    render(<SwitchComponent label="Test Switch" ariaLabel="Test Switch" onChange={vi.fn()} />);
 
     expect(screen.getByRole('switch', { name: 'Test Switch' })).toBeInTheDocument();
   });
@@ -15,7 +15,7 @@ describe('SwitchComponent', () => {
     const user = userEvent.setup();
 
     const onChangeMock = vi.fn();
-    render(<SwitchComponent label="Test Switch" onChange={onChangeMock} />);
+    render(<SwitchComponent label="Test Switch" ariaLabel="Test Switch" onChange={onChangeMock} />);
 
     const switchElement = screen.getByRole('switch');
 
@@ -27,7 +27,7 @@ describe('SwitchComponent', () => {
   it('toggles when clicked', async () => {
     const user = userEvent.setup();
 
-    render(<SwitchComponent label="Test Switch" onChange={vi.fn()} />);
+    render(<SwitchComponent label="Test Switch" ariaLabel="Test Switch" onChange={vi.fn()} />);
 
     const switchElement = screen.getByRole('switch', { name: 'Test Switch' });
 
@@ -42,7 +42,7 @@ describe('SwitchComponent', () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
 
-    render(<SwitchComponent label="Test Switch" onChange={onChange} />);
+    render(<SwitchComponent label="Test Switch" ariaLabel="Test Switch" onChange={onChange} />);
 
     const switchElement = screen.getByRole('switch');
 
@@ -55,7 +55,7 @@ describe('SwitchComponent', () => {
   it('can be toggled with keyboard', async () => {
     const user = userEvent.setup();
 
-    render(<SwitchComponent label="Test Switch" onChange={vi.fn()} />);
+    render(<SwitchComponent label="Test Switch" ariaLabel="Test Switch" onChange={vi.fn()} />);
 
     const switchElement = screen.getByRole('switch', { name: 'Test Switch' });
 
@@ -67,8 +67,11 @@ describe('SwitchComponent', () => {
   });
 
   it('renders the label', () => {
-    render(<SwitchComponent label="Favorites" onChange={vi.fn()} />);
+    render(
+      <SwitchComponent label="Favorites" ariaLabel="Only favorite projects" onChange={vi.fn()} />,
+    );
 
     expect(screen.getByText('Favorites')).toBeInTheDocument();
+    expect(screen.getByRole('switch', { name: 'Only favorite projects' })).toBeInTheDocument();
   });
 });

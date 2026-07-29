@@ -170,6 +170,7 @@ export default function Home() {
 
         <SwitchComponent
           label={<IconHeart size={22} stroke={1.5} style={{ color: 'var(--accent)' }} />}
+          ariaLabel="Only favorite projects"
           onChange={() => {
             setIsOnlyFavorites(!isOnlyFavorites);
           }}
@@ -177,6 +178,7 @@ export default function Home() {
 
         <SwitchComponent
           label={<IconTrash size={22} stroke={1.5} style={{ color: 'var(--accent)' }} />}
+          ariaLabel="Only deleted projects"
           onChange={() => {
             setIsOnlyDeleted(!isOnlyDeleted);
           }}
@@ -185,18 +187,11 @@ export default function Home() {
 
       <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
         {filteredProjects.map((project: Project) => {
-          const badges = [];
-          if (project.isFavorite) {
-            badges.push({ emoji: '❤️', label: 'Favorite' });
-          }
-          if (project.deletedAt !== null) {
-            badges.push({ emoji: '🗑️', label: 'Deleted' });
-          }
           return (
             <CardComponent
               key={project.id}
               {...project}
-              isDeleted={project.deletedAt !== null}
+              isDeleted={project.deletedAt !== null && project.deletedAt !== undefined}
               search={search}
               handleFavoriteClick={() => {
                 void handleFavoriteClick(project);
@@ -207,9 +202,8 @@ export default function Home() {
               handleEditClick={() => {
                 openEditModal(project);
               }}
-              badges={badges}
               menuItems={
-                project.deletedAt !== null
+                project.deletedAt !== null && project.deletedAt !== undefined
                   ? [
                       {
                         menuItemLabel: 'Delete permanently',

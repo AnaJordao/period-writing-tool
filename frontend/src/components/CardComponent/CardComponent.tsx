@@ -12,7 +12,6 @@ interface CardComponentProps {
   header?: string;
   name: string;
   description?: string;
-  badges: { emoji: string; label: string }[];
   createdAt: string;
   menuItems: MenuItem[];
   search: string;
@@ -27,7 +26,6 @@ export function CardComponent({
   header,
   name,
   description,
-  badges,
   createdAt,
   menuItems,
   search,
@@ -37,6 +35,20 @@ export function CardComponent({
   handleFavoriteClick,
   handleRestoreClick,
 }: CardComponentProps) {
+  const badges: { emoji: string; label: string }[] = [];
+
+  if (isFavorite) {
+    badges.push({
+      emoji: '❤️',
+      label: 'Favorited',
+    });
+  }
+  if (isDeleted) {
+    badges.push({
+      emoji: '🗑️',
+      label: 'Deleted',
+    });
+  }
   const tags = badges.map((badge) => (
     <Badge variant="light" key={badge.label} leftSection={badge.emoji}>
       {badge.label}
@@ -134,9 +146,19 @@ export function CardComponent({
             {isDeleted ? (
               <IconRestore size={20} stroke={1.5} className={classes.restoreIcon} />
             ) : isFavorite ? (
-              <IconHeartFilled className={classes.like} stroke={1.5} />
+              <IconHeartFilled
+                className={classes.like}
+                stroke={1.5}
+                aria-label="Filled heart"
+                data-testid="heart-filled-icon"
+              />
             ) : (
-              <IconHeart className={classes.like} stroke={1.5} />
+              <IconHeart
+                className={classes.like}
+                stroke={1.5}
+                aria-label="Unfilled heart"
+                data-testid="heart-unfilled-icon"
+              />
             )}
           </ActionIcon>
         </Tooltip>

@@ -77,7 +77,7 @@ export function DeleteModal({
           onClick={() => {
             void handleDelete();
           }}
-          aria-label="Confirm deletion"
+          aria-label={isPermanentDelete ? 'Permanently Delete' : 'Delete'}
         >
           {isPermanentDelete ? 'Permanently Delete' : 'Delete'}
         </Button>

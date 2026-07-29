@@ -12,6 +12,8 @@ describe('ProjectController', () => {
     findOne: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),
+    removePermanently: jest.fn(),
+    restore: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -45,10 +47,10 @@ describe('ProjectController', () => {
   });
 
   it('calls service.findAll()', async () => {
-    await controller.findAll('name', 'asc', false);
+    await controller.findAll('name', 'asc', true, false);
 
     expect(serviceMock.findAll).toHaveBeenCalledTimes(1);
-    expect(serviceMock.findAll).toHaveBeenCalledWith({ sortBy: 'name', order: 'asc' }, false);
+    expect(serviceMock.findAll).toHaveBeenCalledWith({ sortBy: 'name', order: 'asc' }, true, false);
   });
 
   it('calls service.findOne()', async () => {
@@ -79,5 +81,21 @@ describe('ProjectController', () => {
     await controller.remove(id);
 
     expect(serviceMock.remove).toHaveBeenCalledWith(id);
+  });
+
+  it('calls service.removePermanently() with permanent delete', async () => {
+    const id = '1';
+
+    await controller.removePermanently(id);
+
+    expect(serviceMock.removePermanently).toHaveBeenCalledWith(id);
+  });
+
+  it('calls service.restore()', async () => {
+    const id = '1';
+
+    await controller.restore(id);
+
+    expect(serviceMock.restore).toHaveBeenCalledWith(id);
   });
 });
