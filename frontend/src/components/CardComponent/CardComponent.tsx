@@ -8,7 +8,7 @@ import { HighlightText } from '../HighlightText/HighlightText';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-interface CardComponentProps {
+export interface CardComponentProps {
   header?: string;
   name: string;
   description?: string;
@@ -20,6 +20,7 @@ interface CardComponentProps {
   handleEditClick: () => void;
   handleFavoriteClick: () => void;
   handleRestoreClick: () => void;
+  handleShowDetailsClick: () => void | Promise<void>;
 }
 
 export function CardComponent({
@@ -34,6 +35,7 @@ export function CardComponent({
   handleEditClick,
   handleFavoriteClick,
   handleRestoreClick,
+  handleShowDetailsClick,
 }: CardComponentProps) {
   const badges: { emoji: string; label: string }[] = [];
 
@@ -100,6 +102,9 @@ export function CardComponent({
       <Group mt="xs" className={classes.buttonsSection}>
         <Button
           disabled={isDeleted}
+          onClick={() => {
+            void handleShowDetailsClick();
+          }}
           className={isDeleted ? 'deleted-btn' : 'standard-btn'}
           radius="md"
           style={{ flex: 1 }}

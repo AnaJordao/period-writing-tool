@@ -11,6 +11,7 @@ import { DeleteModal } from '../../components/DeleteModal/DeleteModal';
 import { IconEdit, IconHeart, IconTrash } from '@tabler/icons-react';
 import { GradientSegmentedControl } from '../../components/GradientSegmentedControl/GradientSegmentedControl';
 import { SwitchComponent } from '../../components/SwitchComponent/SwitchComponent';
+import { useNavigate } from 'react-router-dom';
 
 export default function Home() {
   const [search, setSearch] = useState('');
@@ -34,6 +35,7 @@ export default function Home() {
     sortBy: 'updatedAt',
     order: 'desc',
   });
+  const navigate = useNavigate();
 
   const filteredProjects: Project[] = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -202,6 +204,7 @@ export default function Home() {
               handleEditClick={() => {
                 openEditModal(project);
               }}
+              handleShowDetailsClick={() => navigate(`/projects/${project.id}`)}
               menuItems={
                 project.deletedAt !== null && project.deletedAt !== undefined
                   ? [
