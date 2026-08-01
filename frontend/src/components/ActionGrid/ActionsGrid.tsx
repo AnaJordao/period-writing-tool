@@ -28,9 +28,6 @@ export function ActionGrid({ data, title }: ActionGridDataProps) {
     <Card withBorder radius="md" className={classes.card}>
       <Group justify="space-between">
         <Text className={classes.title}>{title}</Text>
-        {/* <Anchor c="inherit" size="xs">
-          + 21 other services
-        </Anchor> */}
       </Group>
       <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} mt="md">
         {items}

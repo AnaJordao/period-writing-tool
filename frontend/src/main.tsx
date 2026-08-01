@@ -8,6 +8,7 @@ import App from './App';
 import { Notifications } from '@mantine/notifications';
 import '@mantine/notifications/styles.css';
 import { BrowserRouter } from 'react-router-dom';
+import { ScrollToTop } from './utils/ScrollToTop';
 
 const root = document.getElementById('root');
 
@@ -19,6 +20,7 @@ createRoot(root).render(
   <StrictMode>
     <MantineProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <Notifications position="top-right" />
         <App />
       </BrowserRouter>
