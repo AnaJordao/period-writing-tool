@@ -12,6 +12,7 @@ import { IconEdit, IconHeart, IconTrash } from '@tabler/icons-react';
 import { GradientSegmentedControl } from '../../components/GradientSegmentedControl/GradientSegmentedControl';
 import { SwitchComponent } from '../../components/SwitchComponent/SwitchComponent';
 import { useNavigate } from 'react-router-dom';
+import { SpinnerComponent } from '../../components/Spinner/Spinner';
 
 export default function Home() {
   const [search, setSearch] = useState('');
@@ -35,6 +36,7 @@ export default function Home() {
     sortBy: 'updatedAt',
     order: 'desc',
   });
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const filteredProjects: Project[] = useMemo(() => {
@@ -111,6 +113,7 @@ export default function Home() {
   }
 
   async function fetchProjects() {
+    setIsLoading(true);
     try {
       const projects = await getProjects(projectSorting, isOnlyFavorites, isOnlyDeleted);
       setAllProjects(projects);
@@ -120,6 +123,8 @@ export default function Home() {
         error instanceof Error ? error.message : 'An error occurred while fetching the projects.',
       );
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -144,7 +149,6 @@ export default function Home() {
   return (
     <>
       <HeaderSearch onClickBtn={openCreateModal} search={search} onSearchChange={setSearch} />
-
       <Group mt="md" mb="md">
         <GradientSegmentedControl
           label="Sort by:"
@@ -186,70 +190,80 @@ export default function Home() {
           }}
         />
       </Group>
-
-      <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
-        {filteredProjects.map((project: Project) => {
-          return (
-            <CardComponent
-              key={project.id}
-              {...project}
-              isDeleted={project.deletedAt !== null && project.deletedAt !== undefined}
-              search={search}
-              handleFavoriteClick={() => {
-                void handleFavoriteClick(project);
-              }}
-              handleRestoreClick={() => {
-                void handleRestoreClick(project);
-              }}
-              handleEditClick={() => {
-                openEditModal(project);
-              }}
-              handleShowDetailsClick={() => navigate(`/projects/${project.id}`)}
-              menuItems={
-                project.deletedAt !== null && project.deletedAt !== undefined
-                  ? [
-                      {
-                        menuItemLabel: 'Delete permanently',
-                        menuItemLabelColor: 'var(--error-bg)',
-                        onClick: () => {
-                          openDeleteProjectModal(project.id, true);
+      {isLoading ? (
+        <SpinnerComponent />
+      ) : (
+        <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
+          {filteredProjects.map((project: Project) => {
+            return (
+              <CardComponent
+                key={project.id}
+                {...project}
+                isDeleted={project.deletedAt !== null && project.deletedAt !== undefined}
+                search={search}
+                handleFavoriteClick={() => {
+                  void handleFavoriteClick(project);
+                }}
+                handleRestoreClick={() => {
+                  void handleRestoreClick(project);
+                }}
+                handleEditClick={() => {
+                  openEditModal(project);
+                }}
+                handleShowDetailsClick={() => navigate(`/projects/${project.id}`)}
+                menuItems={
+                  project.deletedAt !== null && project.deletedAt !== undefined
+                    ? [
+                        {
+                          menuItemLabel: 'Delete permanently',
+                          menuItemLabelColor: 'var(--error-bg)',
+                          onClick: () => {
+                            openDeleteProjectModal(project.id, true);
+                          },
+                          hasDivider: false,
+                          icon: (
+                            <IconTrash
+                              size={16}
+                              stroke={1.5}
+                              style={{ color: 'var(--error-bg)' }}
+                            />
+                          ),
                         },
-                        hasDivider: false,
-                        icon: (
-                          <IconTrash size={16} stroke={1.5} style={{ color: 'var(--error-bg)' }} />
-                        ),
-                      },
-                    ]
-                  : [
-                      {
-                        menuItemLabel: 'Edit project',
-                        menuItemLabelColor: 'var(--accent)',
-                        onClick: () => {
-                          openEditModal(project);
+                      ]
+                    : [
+                        {
+                          menuItemLabel: 'Edit project',
+                          menuItemLabelColor: 'var(--accent)',
+                          onClick: () => {
+                            openEditModal(project);
+                          },
+                          hasDivider: false,
+                          icon: (
+                            <IconEdit size={16} stroke={1.5} style={{ color: 'var(--accent)' }} />
+                          ),
                         },
-                        hasDivider: false,
-                        icon: (
-                          <IconEdit size={16} stroke={1.5} style={{ color: 'var(--accent)' }} />
-                        ),
-                      },
-                      {
-                        menuItemLabel: 'Delete project',
-                        menuItemLabelColor: 'var(--error-bg)',
-                        onClick: () => {
-                          openDeleteProjectModal(project.id);
+                        {
+                          menuItemLabel: 'Delete project',
+                          menuItemLabelColor: 'var(--error-bg)',
+                          onClick: () => {
+                            openDeleteProjectModal(project.id);
+                          },
+                          hasDivider: false,
+                          icon: (
+                            <IconTrash
+                              size={16}
+                              stroke={1.5}
+                              style={{ color: 'var(--error-bg)' }}
+                            />
+                          ),
                         },
-                        hasDivider: false,
-                        icon: (
-                          <IconTrash size={16} stroke={1.5} style={{ color: 'var(--error-bg)' }} />
-                        ),
-                      },
-                    ]
-              }
-            />
-          );
-        })}
-      </SimpleGrid>
-
+                      ]
+                }
+              />
+            );
+          })}
+        </SimpleGrid>
+      )}
       <ProjectModal
         opened={openedProjectModal}
         onClose={closeProjectModal}
@@ -261,7 +275,6 @@ export default function Home() {
           void fetchProjects();
         }}
       />
-
       <DeleteModal
         opened={openedDeleteModal}
         projectRequest={projectRequest}

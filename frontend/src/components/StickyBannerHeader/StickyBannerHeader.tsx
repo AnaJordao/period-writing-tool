@@ -1,10 +1,10 @@
 import classes from './StickyBannerHeader.module.css';
-import { Button, Image, Text, Title, Tooltip } from '@mantine/core';
-import type { Project } from '@period-writing-tool/shared';
+import { Burger, Button, Image, Text, Title, Tooltip } from '@mantine/core';
 import { IconArrowBack } from '@tabler/icons-react';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import placeholderImage from '../../assets/placeholder-image.png';
+import { useProject } from '../../contexts/ProjectContext';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const FADE_RANGE = 100; // px of scroll, right at the banner's bottom edge, over which the crossfade happens
@@ -13,7 +13,8 @@ function clamp01(n: number) {
   return Math.min(1, Math.max(0, n));
 }
 
-export function StickyBannerHeader({ currentProject }: { currentProject: Project }) {
+export function StickyBannerHeader({ opened, toggle }: { opened: boolean; toggle: () => void }) {
+  const { currentProject } = useProject();
   const [progress, setProgress] = useState(0);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -63,6 +64,8 @@ export function StickyBannerHeader({ currentProject }: { currentProject: Project
         <div className={classes.overlay} />
 
         <div style={{ opacity: bannerFade, pointerEvents: bannerFade > 0 ? 'auto' : 'none' }}>
+          <Burger className={classes.burger} opened={opened} onClick={toggle} />
+
           <Tooltip label="Back to projects">
             <Button className={classes.backButton} onClick={() => void navigate('/')}>
               <IconArrowBack />
@@ -91,6 +94,8 @@ export function StickyBannerHeader({ currentProject }: { currentProject: Project
               <IconArrowBack size={18} />
             </Button>
           </Tooltip>
+
+          <Burger className={classes.burgerSmall} opened={opened} onClick={toggle} />
 
           <Title className={classes.stickyTitle} order={4}>
             {currentProject.name}

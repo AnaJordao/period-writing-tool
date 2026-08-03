@@ -30,6 +30,19 @@
   background-color: var(--accent);
 }
 
+.burger {
+  position: absolute;
+  top: 24px;
+  left: 96px;
+  z-index: 3;
+  background: rgba(0, 0, 0, .4);
+  border-radius: 4px;
+  --burger-color:var(--mantine-color-white);
+}
+.burger:hover {
+  background-color: var(--accent);
+}
+
 .bigInfo {
   position: absolute;
   left: 32px;
@@ -61,13 +74,24 @@
   border-radius: 0 0 10px 10px;
 }
 
-.backButtonSmall {
-  background: var(--accent-lighter);
+.burgerSmall  {
+  --burger-color:var(--accent);
   opacity: 0.7;
+  border-radius: 4px;
+}
+.burgerSmall:hover {
+  --burger-color:var(--mantine-color-white);
+  background-color: var(--accent);
+  opacity: 1;
+}
+
+.backButtonSmall {
+  color: var(--accent-lighter);
+  background-color: var(--mantine-color-white);
 }
 .backButtonSmall:hover {
   background-color: var(--accent);
-  opacity: 1;
+  color: var(--mantine-color-white);
 }
 
 .stickyTitle {
