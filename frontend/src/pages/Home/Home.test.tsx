@@ -14,6 +14,16 @@ import {
 } from '../../components/ThreeDotMenu/ThreeDotMenu';
 import { useState } from 'react';
 
+const mockedNavigate = vi.fn();
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockedNavigate,
+  };
+});
+
 vi.mock('../../services/project.service', () => ({
   getProjects: vi.fn(),
   restoreProject: vi.fn(),

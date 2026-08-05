@@ -16,7 +16,13 @@ export function ActionGrid({ data, title }: ActionGridDataProps) {
   const theme = useMantineTheme();
 
   const items = data.map((item) => (
-    <UnstyledButton key={item.title} className={classes.item}>
+    <UnstyledButton
+      key={item.title}
+      className={classes.item}
+      onClick={() => {
+        void item.onClick();
+      }}
+    >
       <item.icon color={theme.colors[item.color][6]} size={32} stroke={1.5} />
       <Text size="xs" mt={7}>
         {item.title}

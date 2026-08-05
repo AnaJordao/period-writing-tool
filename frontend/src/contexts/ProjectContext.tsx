@@ -2,7 +2,7 @@ import type { Project } from '@period-writing-tool/shared';
 import type { IconProps } from '@tabler/icons-react';
 import { use, createContext } from 'react';
 
-interface dataNavigation {
+interface DataNavigation {
   title: string;
   icon: React.ForwardRefExoticComponent<IconProps & React.RefAttributes<SVGSVGElement>>;
   color: string;
@@ -12,7 +12,7 @@ interface dataNavigation {
 interface ProjectContextType {
   currentProject: Project;
   refreshCurrentProject: () => Promise<void>;
-  dataNavigation: dataNavigation[];
+  dataNavigation: DataNavigation[];
   refreshDataNavigation: () => Promise<void>;
 }
 

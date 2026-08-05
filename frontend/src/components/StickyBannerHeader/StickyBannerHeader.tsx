@@ -49,9 +49,13 @@ export function StickyBannerHeader({ opened, toggle }: { opened: boolean; toggle
   const bannerFade = 1 - progress;
   const stickyFade = progress;
 
+  const handleBack = () => {
+    void navigate('/');
+  };
+
   return (
     <>
-      <div className={classes.wrapper} ref={wrapperRef}>
+      <div className={classes.wrapper} ref={wrapperRef} aria-label="Project sticky header">
         {currentProject.header ? (
           <Image
             src={`${API_URL}${currentProject.header}`}
@@ -67,7 +71,11 @@ export function StickyBannerHeader({ opened, toggle }: { opened: boolean; toggle
           <Burger className={classes.burger} opened={opened} onClick={toggle} />
 
           <Tooltip label="Back to projects">
-            <Button className={classes.backButton} onClick={() => void navigate('/')}>
+            <Button
+              className={classes.backButton}
+              onClick={handleBack}
+              aria-label="Back to projects banner"
+            >
               <IconArrowBack />
             </Button>
           </Tooltip>
@@ -90,7 +98,11 @@ export function StickyBannerHeader({ opened, toggle }: { opened: boolean; toggle
           }}
         >
           <Tooltip label="Back to projects">
-            <Button className={classes.backButtonSmall} onClick={() => void navigate('/')}>
+            <Button
+              className={classes.backButtonSmall}
+              onClick={handleBack}
+              aria-label="Back to projects sticky bar"
+            >
               <IconArrowBack size={18} />
             </Button>
           </Tooltip>

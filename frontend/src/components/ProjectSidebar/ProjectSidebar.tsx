@@ -14,6 +14,9 @@ export function ProjectSidebar({ opened, close }: { opened: boolean; close: () =
       title="Where would you like to go?"
       zIndex={1000000}
       classNames={{ body: classes.drawerBody }}
+      closeButtonProps={{
+        'aria-label': 'Close sidebar',
+      }}
     >
       {dataNavigation.map((item, index) => (
         // eslint-disable-next-line react-x/no-array-index-key, @typescript-eslint/restrict-template-expressions
