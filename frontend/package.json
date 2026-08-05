@@ -15,15 +15,17 @@
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
+    "@gfazioli/mantine-spinner": "^4.1.8",
     "@mantine/core": "^9.4.1",
     "@mantine/dropzone": "^9.4.1",
     "@mantine/hooks": "^9.4.1",
     "@mantine/notifications": "^9.4.1",
+    "@period-writing-tool/shared": "file:../shared",
     "@tabler/icons-react": "^3.44.0",
     "axios": "^1.18.1",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "@period-writing-tool/shared": "file:../shared"
+    "react-router-dom": "^7.18.2"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

@@ -1,11 +1,10 @@
-import { Container } from "@mantine/core";
-import Home from "./pages/Home/Home";
+import { Container } from '@mantine/core';
+import AppRouter from './router/AppRouter';
 
 export default function App() {
-  
   return (
     <Container py="xl">
-      <Home />      
+      <AppRouter />
     </Container>
   );
 }

@@ -1,0 +1,101 @@
+.wrapper {
+  position: relative;
+  height: 400px; /* must match BANNER_HEIGHT in the component */
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.banner {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.75), rgba(0,0,0,.15), transparent);
+}
+
+.backButton {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  z-index: 3;
+  background: rgba(0, 0, 0, .4);
+}
+.backButton:hover {
+  background-color: var(--accent);
+}
+
+.burger {
+  position: absolute;
+  top: 24px;
+  left: 96px;
+  z-index: 3;
+  background: rgba(0, 0, 0, .4);
+  border-radius: 4px;
+  --burger-color:var(--mantine-color-white);
+}
+.burger:hover {
+  background-color: var(--accent);
+}
+
+.bigInfo {
+  position: absolute;
+  left: 32px;
+  right: 32px;
+  bottom: 32px;
+  z-index: 2;
+}
+
+.title {
+  color: white;
+  margin-bottom: 8px;
+}
+
+.description {
+  color: rgba(255, 255, 255, .9);
+}
+
+/* --- sticky mini header --- */
+
+.stickyBar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 0 0 10px 10px;
+}
+
+.burgerSmall  {
+  --burger-color:var(--accent);
+  opacity: 0.7;
+  border-radius: 4px;
+}
+.burgerSmall:hover {
+  --burger-color:var(--mantine-color-white);
+  background-color: var(--accent);
+  opacity: 1;
+}
+
+.backButtonSmall {
+  color: var(--accent-lighter);
+  background-color: var(--mantine-color-white);
+}
+.backButtonSmall:hover {
+  background-color: var(--accent);
+  color: var(--mantine-color-white);
+}
+
+.stickyTitle {
+  color: black;
+  font-size: 18px;
+  margin: 0;
+}

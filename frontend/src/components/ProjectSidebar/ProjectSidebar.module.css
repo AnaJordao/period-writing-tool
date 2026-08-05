@@ -1,0 +1,13 @@
+.drawerBody {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.drawerBody button {
+  padding: 10px;
+
+  &:hover {
+    border: 2px dashed var(--accent-lighter);
+  }
+}
