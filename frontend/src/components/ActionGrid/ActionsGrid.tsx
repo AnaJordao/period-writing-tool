@@ -1,9 +1,11 @@
 import { Card, Group, SimpleGrid, Text, UnstyledButton, useMantineTheme } from '@mantine/core';
 import classes from './ActionGrid.module.css';
 import type { IconProps } from '@tabler/icons-react';
+import { Fragment } from 'react/jsx-runtime';
 
 interface ActionGridDataProps {
   data: {
+    sectionName?: string;
     title: string;
     icon: React.ForwardRefExoticComponent<IconProps & React.RefAttributes<SVGSVGElement>>;
     color: string;
@@ -16,18 +18,25 @@ export function ActionGrid({ data, title }: ActionGridDataProps) {
   const theme = useMantineTheme();
 
   const items = data.map((item) => (
-    <UnstyledButton
-      key={item.title}
-      className={classes.item}
-      onClick={() => {
-        void item.onClick();
-      }}
-    >
-      <item.icon color={theme.colors[item.color][6]} size={32} stroke={1.5} />
-      <Text size="xs" mt={7}>
-        {item.title}
-      </Text>
-    </UnstyledButton>
+    <Fragment key={item.title}>
+      {item.sectionName && (
+        <Text key={item.sectionName} className={classes.sectionTitle}>
+          {item.sectionName}
+        </Text>
+      )}
+      <UnstyledButton
+        key={item.title}
+        className={classes.item}
+        onClick={() => {
+          void item.onClick();
+        }}
+      >
+        <item.icon color={theme.colors[item.color][6]} size={32} stroke={1.5} />
+        <Text size="xs" mt={7}>
+          {item.title}
+        </Text>
+      </UnstyledButton>
+    </Fragment>
   ));
 
   return (
