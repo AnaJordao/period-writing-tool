@@ -7,58 +7,68 @@ import {
   IconUser,
   IconUsersGroup,
 } from '@tabler/icons-react';
-import { ActionGrid } from '../../components/ActionGrid/ActionsGrid';
+import { ActionGrid, type ActionGridSectionProps } from '../../components/ActionGrid/ActionsGrid';
 import { useNavigate } from 'react-router-dom';
 
 export function ElementsPage() {
   const navigate = useNavigate();
 
-  const elementDataNavigation = [
+  const elementDataNavigation: ActionGridSectionProps[] = [
     {
       sectionName: 'Characters',
-      title: 'Characters',
-      icon: IconUser,
-      color: 'blue',
-      onClick: () => navigate('characters'),
-    },
-    {
-      title: 'Groups',
-      icon: IconUsersGroup,
-      color: 'gray',
-      onClick: () => navigate('groups'),
+      sectionData: [
+        {
+          title: 'Characters',
+          icon: IconUser,
+          color: 'blue',
+          onClick: () => void navigate('characters'),
+        },
+        {
+          title: 'Groups',
+          icon: IconUsersGroup,
+          color: 'gray',
+          onClick: () => void navigate('groups'),
+        },
+      ],
     },
     {
       sectionName: 'Worldbuilding',
-      title: 'Locations',
-      icon: IconMapPin,
-      color: 'green',
-      onClick: () => navigate('locations'),
-    },
-    {
-      title: 'Species',
-      icon: IconDna2,
-      color: 'orange',
-      onClick: () => navigate('species'),
-    },
-    {
-      title: 'Items',
-      icon: IconSwords,
-      color: 'dark',
-      onClick: () => navigate('items'),
-    },
-    {
-      title: 'Religions',
-      icon: IconStars,
-      color: 'yellow',
-      onClick: () => navigate('religions'),
-    },
-    {
-      title: 'Languages',
-      icon: IconLanguage,
-      color: 'pink',
-      onClick: () => navigate('languages'),
+      sectionData: [
+        {
+          title: 'Locations',
+          icon: IconMapPin,
+          color: 'green',
+          onClick: () => void navigate('locations'),
+        },
+        {
+          title: 'Species',
+          icon: IconDna2,
+          color: 'orange',
+          onClick: () => void navigate('species'),
+        },
+        {
+          title: 'Items',
+          icon: IconSwords,
+          color: 'dark',
+          onClick: () => void navigate('items'),
+        },
+        {
+          title: 'Religions',
+          icon: IconStars,
+          color: 'yellow',
+          onClick: () => void navigate('religions'),
+        },
+        {
+          title: 'Languages',
+          icon: IconLanguage,
+          color: 'pink',
+          onClick: () => void navigate('languages'),
+        },
+      ],
     },
   ];
 
-  return <ActionGrid title="What do you want to create?" data={elementDataNavigation} />;
+  return (
+    <ActionGrid title="What do you want to create?" type="sectioned" data={elementDataNavigation} />
+  );
 }
