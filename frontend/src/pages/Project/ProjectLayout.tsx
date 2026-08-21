@@ -33,40 +33,40 @@ export default function ProjectLayout() {
   });
   const data = [
     {
-      title: 'World Elements',
+      title: 'Elements',
       icon: IconWorld,
       color: 'blue',
-      onClick: () => navigate('/elements'),
+      onClick: () => navigate('elements'),
     },
     {
       title: 'Writing',
       icon: IconWriting,
       color: 'orange',
-      onClick: () => navigate('/writing'),
+      onClick: () => navigate('writing'),
     },
     {
       title: 'Brainstorm',
       icon: IconBrain,
       color: 'pink',
-      onClick: () => navigate('/brainstorm'),
+      onClick: () => navigate('brainstorm'),
     },
     {
       title: 'Timeline',
       icon: IconTimelineEventExclamation,
       color: 'green',
-      onClick: () => navigate('/timeline'),
+      onClick: () => navigate('timeline'),
     },
     {
       title: 'Dashboard',
       icon: IconTimeline,
       color: 'dark',
-      onClick: () => navigate('/dashboard'),
+      onClick: () => navigate('dashboard'),
     },
     {
       title: 'Settings',
       icon: IconSettings,
       color: 'gray',
-      onClick: () => navigate('/settings'),
+      onClick: () => navigate('settings'),
     },
   ];
 

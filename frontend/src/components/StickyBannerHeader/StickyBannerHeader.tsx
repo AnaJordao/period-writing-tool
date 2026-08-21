@@ -17,7 +17,7 @@ export function StickyBannerHeader({ opened, toggle }: { opened: boolean; toggle
   const stickyFade = progress;
 
   const handleBack = () => {
-    void navigate('/');
+    void navigate(-1);
   };
 
   return (
@@ -37,12 +37,8 @@ export function StickyBannerHeader({ opened, toggle }: { opened: boolean; toggle
         <div style={{ opacity: bannerFade, pointerEvents: bannerFade > 0 ? 'auto' : 'none' }}>
           <Burger className={classes.burger} opened={opened} onClick={toggle} />
 
-          <Tooltip label="Back to projects">
-            <Button
-              className={classes.backButton}
-              onClick={handleBack}
-              aria-label="Back to projects banner"
-            >
+          <Tooltip label="Go Back">
+            <Button className={classes.backButton} onClick={handleBack} aria-label="Go Back banner">
               <IconArrowBack />
             </Button>
           </Tooltip>
@@ -64,11 +60,11 @@ export function StickyBannerHeader({ opened, toggle }: { opened: boolean; toggle
             gap: 16,
           }}
         >
-          <Tooltip label="Back to projects">
+          <Tooltip label="Go Back">
             <Button
               className={classes.backButtonSmall}
               onClick={handleBack}
-              aria-label="Back to projects sticky bar"
+              aria-label="Go Back sticky bar"
             >
               <IconArrowBack size={18} />
             </Button>

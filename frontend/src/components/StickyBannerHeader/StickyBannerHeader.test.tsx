@@ -50,7 +50,7 @@ describe('StickyBannerHeader', () => {
     expect(screen.getByLabelText('Project sticky header')).toBeInTheDocument();
   });
 
-  it('navigates home when banner back button is clicked', async () => {
+  it('navigates back when banner back button is clicked', async () => {
     const user = userEvent.setup();
 
     mockedStickyHeader.mockReturnValue({
@@ -60,12 +60,12 @@ describe('StickyBannerHeader', () => {
 
     render(<StickyBannerHeader opened={false} toggle={toggle} />);
 
-    await user.click(screen.getByLabelText('Back to projects banner'));
+    await user.click(screen.getByLabelText('Go Back banner'));
 
-    expect(mockedNavigate).toHaveBeenCalledWith('/');
+    expect(mockedNavigate).toHaveBeenCalledWith(-1);
   });
 
-  it('navigates home when sticky bar back button is clicked', async () => {
+  it('navigates back when sticky bar back button is clicked', async () => {
     const user = userEvent.setup();
 
     mockedStickyHeader.mockReturnValue({
@@ -75,9 +75,9 @@ describe('StickyBannerHeader', () => {
 
     render(<StickyBannerHeader opened={false} toggle={toggle} />);
 
-    await screen.findByLabelText('Back to projects sticky bar');
+    await screen.findByLabelText('Go Back sticky bar');
 
-    await user.click(screen.getByLabelText('Back to projects sticky bar'));
-    expect(mockedNavigate).toHaveBeenCalledWith('/');
+    await user.click(screen.getByLabelText('Go Back sticky bar'));
+    expect(mockedNavigate).toHaveBeenCalledWith(-1);
   });
 });
