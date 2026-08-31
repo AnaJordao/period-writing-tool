@@ -25,8 +25,8 @@ model Location {
   images      String[]  @default([])
   isFavorite  Boolean   @default(false)
 
-  basicInfoId String    @unique
-  basicInfo   LocationBasicInfo @relation(fields: [basicInfoId], references: [id])
+  basicInfoId String?    @unique
+  basicInfo   LocationBasicInfo? @relation(fields: [basicInfoId], references: [id])
 
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt

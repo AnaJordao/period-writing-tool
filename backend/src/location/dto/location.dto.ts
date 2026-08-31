@@ -15,6 +15,8 @@ export class LocationDto {
   @IsBoolean()
   @Transform(({ value }) => value === 'true')
   isFavorite: boolean = false;
+
+  locationBasicInfo?: LocationBasicInfoDto;
 }
 
 export class LocationBasicInfoDto {

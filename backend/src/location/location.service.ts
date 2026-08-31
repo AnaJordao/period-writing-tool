@@ -1,29 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { LocationBasicInfoDto, LocationDto } from './dto/location.dto';
+import { LocationDto } from './dto/location.dto';
 import { Location } from '@prisma/client';
 
 @Injectable()
 export class LocationService {
   constructor(private prisma: PrismaService) {}
 
-  async create(
-    createLocationDto: LocationDto,
-    createLocationBasicInfoDto: LocationBasicInfoDto,
-    images?: string[] | null,
-  ): Promise<Location> {
+  async create(locationDto: LocationDto, images?: string[] | null): Promise<Location> {
+    const { locationBasicInfo, ...rest } = locationDto;
     return await this.prisma.location.create({
       data: {
-        ...createLocationDto,
+        ...rest,
         ...(images && {
           images: images.map((image) => `/uploads/${image}`),
         }),
-
-        basicInfo: {
-          create: {
-            ...createLocationBasicInfoDto,
+        ...(locationBasicInfo && {
+          basicInfo: {
+            create: locationBasicInfo,
           },
-        },
+        }),
       },
       include: {
         basicInfo: true,
@@ -54,13 +50,22 @@ export class LocationService {
   }
 
   update(id: string, locationDto: LocationDto, images?: string[] | null) {
+    const { locationBasicInfo, ...rest } = locationDto;
     return this.prisma.location.update({
       where: { id },
       data: {
-        ...locationDto,
+        ...rest,
         ...(images && {
           images: images.map((image) => `/uploads/${image}`),
         }),
+        ...(locationBasicInfo && {
+          basicInfo: {
+            create: locationBasicInfo,
+          },
+        }),
+      },
+      include: {
+        basicInfo: true,
       },
     });
   }
