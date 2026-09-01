@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from '../prisma/prisma.module';
 import { ProjectModule } from './project/project.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { LocationModule } from './location/location.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -15,6 +16,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     }),
     PrismaModule,
     ProjectModule,
+    LocationModule,
   ],
 })
 export class AppModule {}

@@ -16,3 +16,36 @@ model Project {
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
 }
+
+model Location {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  type        String
+  images      String[]  @default([])
+  isFavorite  Boolean   @default(false)
+
+  basicInfoId String?    @unique
+  basicInfo   LocationBasicInfo? @relation(fields: [basicInfoId], references: [id])
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+}
+
+model LocationBasicInfo {
+  id                String    @id @default(cuid())
+  dimensions        String?
+  area              Float?
+  condition         String?
+  inhabitants       String[]
+  population        Int?
+  items             String[]
+  militaryStrength  String?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  location          Location?
+}
