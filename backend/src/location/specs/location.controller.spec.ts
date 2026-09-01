@@ -44,32 +44,38 @@ describe('LocationController', () => {
   it('calls service.create() without images and without basic info', async () => {
     await controller.create(createBasicLocationDto);
 
-    expect(serviceMock.create).toHaveBeenCalledWith(createBasicLocationDto, null);
+    expect(serviceMock.create).toHaveBeenCalledWith(createBasicLocationDto, []);
   });
 
   it('calls service.create() without images and with basic info', async () => {
     await controller.create(createDtoWithBasicInfo);
 
-    expect(serviceMock.create).toHaveBeenCalledWith(createDtoWithBasicInfo, null);
+    expect(serviceMock.create).toHaveBeenCalledWith(createDtoWithBasicInfo, []);
   });
 
   it('calls service.create() with images and without basic info', async () => {
     await controller.create(createBasicLocationDto, files);
 
-    expect(serviceMock.create).toHaveBeenCalledWith(createBasicLocationDto, files);
+    expect(serviceMock.create).toHaveBeenCalledWith(
+      createBasicLocationDto,
+      files.map((file) => file.filename),
+    );
   });
 
   it('calls service.create() with images and with basic info', async () => {
     await controller.create(createDtoWithBasicInfo, files);
 
-    expect(serviceMock.create).toHaveBeenCalledWith(createDtoWithBasicInfo, files);
+    expect(serviceMock.create).toHaveBeenCalledWith(
+      createDtoWithBasicInfo,
+      files.map((file) => file.filename),
+    );
   });
 
   it('calls service.findAll()', async () => {
     await controller.findAll(true, false);
 
     expect(serviceMock.findAll).toHaveBeenCalledTimes(1);
-    expect(serviceMock.findAll).toHaveBeenCalledWith({ sortBy: 'name', order: 'asc' }, true, false);
+    expect(serviceMock.findAll).toHaveBeenCalledWith(true, false);
   });
 
   it('calls service.findOne()', async () => {
@@ -85,7 +91,7 @@ describe('LocationController', () => {
 
     await controller.update(id, updateBasicLocationDto);
 
-    expect(serviceMock.update).toHaveBeenCalledWith(id, updateBasicLocationDto, null);
+    expect(serviceMock.update).toHaveBeenCalledWith(id, updateBasicLocationDto, []);
   });
 
   it('calls service.update() without images and with basic info', async () => {
@@ -93,7 +99,7 @@ describe('LocationController', () => {
 
     await controller.update(id, updateDtoWithBasicInfo);
 
-    expect(serviceMock.update).toHaveBeenCalledWith(id, updateDtoWithBasicInfo, null);
+    expect(serviceMock.update).toHaveBeenCalledWith(id, updateDtoWithBasicInfo, []);
   });
 
   it('calls service.update() with images and without basic info', async () => {
@@ -101,7 +107,11 @@ describe('LocationController', () => {
 
     await controller.update(id, updateBasicLocationDto, files);
 
-    expect(serviceMock.update).toHaveBeenCalledWith(id, updateBasicLocationDto, files);
+    expect(serviceMock.update).toHaveBeenCalledWith(
+      id,
+      updateBasicLocationDto,
+      files.map((file) => file.filename),
+    );
   });
 
   it('calls service.update() with images and with basic info', async () => {
@@ -109,7 +119,11 @@ describe('LocationController', () => {
 
     await controller.update(id, updateDtoWithBasicInfo, files);
 
-    expect(serviceMock.update).toHaveBeenCalledWith(id, updateDtoWithBasicInfo, files);
+    expect(serviceMock.update).toHaveBeenCalledWith(
+      id,
+      updateDtoWithBasicInfo,
+      files.map((file) => file.filename),
+    );
   });
 
   it('calls service.remove()', async () => {

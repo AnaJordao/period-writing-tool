@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { LocationService } from '../location.service';
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
+
+import { LocationService } from '../location.service';
 import { PrismaService } from '../../../prisma/prisma.service';
+
 import {
   createBasicLocationDto,
   createDtoWithBasicInfo,
@@ -24,6 +26,8 @@ describe('LocationService', () => {
   };
 
   beforeEach(async () => {
+    jest.clearAllMocks();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         LocationService,
@@ -41,11 +45,20 @@ describe('LocationService', () => {
     expect(service).toBeDefined();
   });
 
+  // ---------------------------------------------------------------------------
+  // CREATE
+  // ---------------------------------------------------------------------------
+
   it('calls prisma.location.create() without images and without basic info', async () => {
     await service.create(createBasicLocationDto);
 
     expect(prismaMock.location.create).toHaveBeenCalledWith({
-      data: createBasicLocationDto,
+      data: {
+        ...createBasicLocationDto,
+      },
+      include: {
+        basicInfo: true,
+      },
     });
   });
 
@@ -54,7 +67,10 @@ describe('LocationService', () => {
 
     expect(prismaMock.location.create).toHaveBeenCalledWith({
       data: {
-        ...createDtoWithBasicInfo,
+        description: createDtoWithBasicInfo.description,
+        isFavorite: createDtoWithBasicInfo.isFavorite,
+        name: createDtoWithBasicInfo.name,
+        type: createDtoWithBasicInfo.type,
         basicInfo: {
           create: createDtoWithBasicInfo.locationBasicInfo,
         },
@@ -71,9 +87,10 @@ describe('LocationService', () => {
     expect(prismaMock.location.create).toHaveBeenCalledWith({
       data: {
         ...createBasicLocationDto,
-        images: {
-          create: filesNames.map((image) => ({ filename: image })),
-        },
+        images: filesNames.map((image) => `/uploads/${image}`),
+      },
+      include: {
+        basicInfo: true,
       },
     });
   });
@@ -83,10 +100,13 @@ describe('LocationService', () => {
 
     expect(prismaMock.location.create).toHaveBeenCalledWith({
       data: {
-        ...createDtoWithBasicInfo,
-        images: {
-          create: filesNames.map((image) => ({ filename: image })),
-        },
+        description: createDtoWithBasicInfo.description,
+        isFavorite: createDtoWithBasicInfo.isFavorite,
+        name: createDtoWithBasicInfo.name,
+        type: createDtoWithBasicInfo.type,
+
+        images: filesNames.map((image) => `/uploads/${image}`),
+
         basicInfo: {
           create: createDtoWithBasicInfo.locationBasicInfo,
         },
@@ -97,16 +117,61 @@ describe('LocationService', () => {
     });
   });
 
-  it('calls prisma.location.findMany()', async () => {
+  // ---------------------------------------------------------------------------
+  // FIND ALL
+  // ---------------------------------------------------------------------------
+
+  it('calls prisma.location.findMany() without filters', async () => {
     await service.findAll(false, false);
 
     expect(prismaMock.location.findMany).toHaveBeenCalledWith({
-      where: { deletedAt: null, isFavorite: undefined },
-      // orderBy: {
-      //   name: 'asc',
-      // },
+      where: {
+        deletedAt: null,
+        isFavorite: undefined,
+      },
     });
   });
+
+  it('calls prisma.location.findMany() with isOnlyFavoriteFilter', async () => {
+    await service.findAll(true, false);
+
+    expect(prismaMock.location.findMany).toHaveBeenCalledWith({
+      where: {
+        deletedAt: null,
+        isFavorite: true,
+      },
+    });
+  });
+
+  it('calls prisma.location.findMany() with isOnlyDeletedFilter', async () => {
+    await service.findAll(false, true);
+
+    expect(prismaMock.location.findMany).toHaveBeenCalledWith({
+      where: {
+        deletedAt: {
+          not: null,
+        },
+        isFavorite: undefined,
+      },
+    });
+  });
+
+  it('calls prisma.location.findMany() with both filters', async () => {
+    await service.findAll(true, true);
+
+    expect(prismaMock.location.findMany).toHaveBeenCalledWith({
+      where: {
+        deletedAt: {
+          not: null,
+        },
+        isFavorite: true,
+      },
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // FIND ONE
+  // ---------------------------------------------------------------------------
 
   it('calls prisma.location.findUnique()', async () => {
     const id = '1';
@@ -114,9 +179,16 @@ describe('LocationService', () => {
     await service.findOne(id);
 
     expect(prismaMock.location.findUnique).toHaveBeenCalledWith({
-      where: { id, deletedAt: null },
+      where: {
+        id,
+        deletedAt: null,
+      },
     });
   });
+
+  // ---------------------------------------------------------------------------
+  // UPDATE
+  // ---------------------------------------------------------------------------
 
   it('calls prisma.location.update() without images and without basic info', async () => {
     const id = '1';
@@ -124,8 +196,15 @@ describe('LocationService', () => {
     await service.update(id, updateBasicLocationDto);
 
     expect(prismaMock.location.update).toHaveBeenCalledWith({
-      where: { id },
-      data: updateBasicLocationDto,
+      where: {
+        id,
+      },
+      data: {
+        ...updateBasicLocationDto,
+      },
+      include: {
+        basicInfo: true,
+      },
     });
   });
 
@@ -135,11 +214,17 @@ describe('LocationService', () => {
     await service.update(id, updateDtoWithBasicInfo);
 
     expect(prismaMock.location.update).toHaveBeenCalledWith({
-      where: { id },
+      where: {
+        id,
+      },
       data: {
-        ...updateDtoWithBasicInfo,
+        description: updateDtoWithBasicInfo.description,
+        isFavorite: updateDtoWithBasicInfo.isFavorite,
+        name: updateDtoWithBasicInfo.name,
+        type: updateDtoWithBasicInfo.type,
+
         basicInfo: {
-          create: updateDtoWithBasicInfo.locationBasicInfo,
+          update: updateDtoWithBasicInfo.locationBasicInfo,
         },
       },
       include: {
@@ -154,12 +239,15 @@ describe('LocationService', () => {
     await service.update(id, updateBasicLocationDto, filesNames);
 
     expect(prismaMock.location.update).toHaveBeenCalledWith({
-      where: { id },
+      where: {
+        id,
+      },
       data: {
         ...updateBasicLocationDto,
-        images: {
-          create: filesNames.map((image) => ({ filename: image })),
-        },
+        images: filesNames.map((image) => `/uploads/${image}`),
+      },
+      include: {
+        basicInfo: true,
       },
     });
   });
@@ -170,14 +258,19 @@ describe('LocationService', () => {
     await service.update(id, updateDtoWithBasicInfo, filesNames);
 
     expect(prismaMock.location.update).toHaveBeenCalledWith({
-      where: { id },
+      where: {
+        id,
+      },
       data: {
-        ...updateDtoWithBasicInfo,
-        images: {
-          create: filesNames.map((image) => ({ filename: image })),
-        },
+        description: updateDtoWithBasicInfo.description,
+        isFavorite: updateDtoWithBasicInfo.isFavorite,
+        name: updateDtoWithBasicInfo.name,
+        type: updateDtoWithBasicInfo.type,
+
+        images: filesNames.map((image) => `/uploads/${image}`),
+
         basicInfo: {
-          create: updateDtoWithBasicInfo.locationBasicInfo,
+          update: updateDtoWithBasicInfo.locationBasicInfo,
         },
       },
       include: {
@@ -186,49 +279,28 @@ describe('LocationService', () => {
     });
   });
 
+  // ---------------------------------------------------------------------------
+  // REMOVE
+  // ---------------------------------------------------------------------------
+
   it('calls prisma.location.update() for remove()', async () => {
     const id = '1';
 
     await service.remove(id);
 
     expect(prismaMock.location.update).toHaveBeenCalledWith({
-      where: { id },
-      data: { deletedAt: expect.any(Date) },
-    });
-  });
-
-  it('calls prisma.location.get() with isOnlyFavoriteFilter correctly', async () => {
-    await service.findAll(true, false);
-
-    expect(prismaMock.location.findMany).toHaveBeenCalledWith({
-      where: { deletedAt: null, isFavorite: true },
-      // orderBy: {
-      //   name: 'asc',
-      // },
-    });
-  });
-
-  it('calls prisma.location.get() with isOnlyDeletedFilter correctly', async () => {
-    await service.findAll(false, true);
-
-    expect(prismaMock.location.findMany).toHaveBeenCalledWith({
-      where: { deletedAt: { not: null }, isFavorite: undefined },
-      orderBy: {
-        name: 'asc',
+      where: {
+        id,
+      },
+      data: {
+        deletedAt: expect.any(Date),
       },
     });
   });
 
-  it('calls prisma.location.get() with isOnlyFavoriteFilter and isOnlyDeletedFilter correctly', async () => {
-    await service.findAll(true, true);
-
-    expect(prismaMock.location.findMany).toHaveBeenCalledWith({
-      where: { deletedAt: { not: null }, isFavorite: true },
-      // orderBy: {
-      //   name: 'asc',
-      // },
-    });
-  });
+  // ---------------------------------------------------------------------------
+  // REMOVE PERMANENTLY
+  // ---------------------------------------------------------------------------
 
   it('calls prisma.location.delete() for removePermanently()', async () => {
     const id = '1';
@@ -236,9 +308,15 @@ describe('LocationService', () => {
     await service.removePermanently(id);
 
     expect(prismaMock.location.delete).toHaveBeenCalledWith({
-      where: { id },
+      where: {
+        id,
+      },
     });
   });
+
+  // ---------------------------------------------------------------------------
+  // RESTORE
+  // ---------------------------------------------------------------------------
 
   it('calls prisma.location.update() for restore()', async () => {
     const id = '1';
@@ -246,8 +324,12 @@ describe('LocationService', () => {
     await service.restore(id);
 
     expect(prismaMock.location.update).toHaveBeenCalledWith({
-      where: { id },
-      data: { deletedAt: null },
+      where: {
+        id,
+      },
+      data: {
+        deletedAt: null,
+      },
     });
   });
 });

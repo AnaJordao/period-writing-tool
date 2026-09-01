@@ -60,7 +60,7 @@ export class LocationService {
         }),
         ...(locationBasicInfo && {
           basicInfo: {
-            create: locationBasicInfo,
+            update: locationBasicInfo,
           },
         }),
       },
