@@ -1,4 +1,4 @@
-# How to create a new table in the database
+# How to create/uodate a new table in the database
 
 1. Update the `schema.prisma`
 
@@ -15,4 +15,10 @@ npx prisma migrate dev --name migration_msg
 4. Generate/update the Prisma client:
 ```bash
 npx prisma generate 
+```
+
+# How to see the database through prisma?
+
+```bash
+npx prisma studio 
 ```

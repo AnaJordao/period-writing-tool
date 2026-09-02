@@ -7,6 +7,9 @@
     "shared/"
   ],
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^26.4.1",
     "fast-xml-parser": "^5.10.1"
-  }
+  },
+  "scripts": {}
 }
